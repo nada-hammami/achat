@@ -13,7 +13,7 @@ services:
    build: ./
    restart: on-failure
    ports:
-    - 8082:8082
+    - 8087:8087
    stdin_open: true
    tty: true
 volumes:

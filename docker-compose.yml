@@ -5,6 +5,8 @@ services:
   restart: unless-stopped
   ports:
   - 3309:3310
+  environment:
+   - MYSQL_ALLOW_EMPTY_PASSWORD=yes
   volumes:
   - db:/var/lib/mysql
  achat-backend:

@@ -4,6 +4,8 @@ services:
   mysqldb:
     image: mysql:5.7
     restart: unless-stopped
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
     ports:
       - 3311:3306
     volumes:
@@ -14,6 +16,8 @@ services:
       - mysqldb
     build: ./
     restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - 6868-8089
     stdin_open: true

@@ -5,9 +5,10 @@ services:
     image: mysql:5.7
     restart: unless-stopped
     ports:
-      - 3310:3306
+      - 3311:3306
     volumes:
       - db:/var/lib/mysql
+
   achat-backend:
     depends_on:
       - mysqldb
@@ -17,6 +18,7 @@ services:
       - 6868-8089
     stdin_open: true
     tty: true
+
 
 volumes:
   db:

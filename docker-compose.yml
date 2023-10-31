@@ -4,7 +4,7 @@ services:
     image: mysql:5.7
     restart: unless-stopped
     ports:
-      - "3307:3306"
+      - 3307:3306
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
     volumes:
@@ -15,18 +15,8 @@ services:
     build: ./
     restart: on-failure
     ports:
-      - "8087:8088"
+      - 8087:8088
     stdin_open: true
     tty: true
-    networks:
-      my-bridge:
-        ipv4_address: 192.168.33.11
-networks:
-  my-bridge:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.33.0/24
-          gateway: 192.168.33.1
 volumes:
-  db:
+  db :

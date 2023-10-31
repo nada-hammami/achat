@@ -1,22 +1,30 @@
 version: "3.8"
 services:
- mysqldb:
-  image: mysql:5.7
-  restart: unless-stopped
-  ports:
-  - 3307:3306
-  environment:
-   - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-  volumes:
-  - db:/var/lib/mysql
- achat-backend:
-   depends_on:
-    - mysqldb
-   build: ./
-   restart: on-failure
-   ports:
-    - 8087:8088
-   stdin_open: true
-   tty: true
-volumes:
-    db :
+  mysqldb:
+    image: mysql:5.7
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - db:/var/lib/mysql
+  achat-backend:
+    depends_on:
+      - mysqldb
+    build: ./
+    restart: on-failure
+    ports:
+      - "8087:8088"
+    stdin_open: true
+    tty: true
+    networks:
+      my-bridge:
+        ipv4_address: 192.168.33.11
+networks:
+  my-bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.33.0/24
+          gateway: 192.168.33.1

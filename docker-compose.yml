@@ -9,6 +9,10 @@ services:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
     volumes:
       - db:/var/lib/mysql
+    networks:
+      my-bridge:
+        ipv4_address: 192.168.33.10
+
   achat-backend:
     depends_on:
       - mysqldb
@@ -18,5 +22,17 @@ services:
       - 8087:8088
     stdin_open: true
     tty: true
+    networks:
+      my-bridge:
+        ipv4_address: 192.168.33.11
+
+networks:
+  my-bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.33.0/24
+          gateway: 192.168.33.1
+
 volumes:
-  db :
+  db:

@@ -20,6 +20,8 @@ services:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - 6868-8089
+    volumes:
+      - .m2/root/.m2
     stdin_open: true
     tty: true
 

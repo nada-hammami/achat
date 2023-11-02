@@ -19,7 +19,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - 6868:8089
+      - 8089:8089
 
     stdin_open: true
     tty: true

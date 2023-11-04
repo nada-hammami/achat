@@ -29,7 +29,7 @@ services:
       MANAGEMENT_ENDPOINT_HEALTH_SHOW-DETAILS: 'always'
   # Frontend application service
   front:
-    image: dhiatrabelsi/front:7
+    image: dhiatrabelsi/front:8
     ports:
       - "80:80"
 

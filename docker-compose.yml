@@ -31,6 +31,12 @@ services:
     stdin_open: true
     tty: true
 
+  front:
+    image: nadahm/front
+    restart: on-failure
+    ports:
+      - 4200:4200
+
 
 volumes:
   db:

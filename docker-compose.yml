@@ -31,7 +31,7 @@ services:
   front:
     image: dhiatrabelsi/front:15
     ports:
-      - "86:86"
+      - "84:85"
 
 volumes:
   db :

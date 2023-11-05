@@ -35,7 +35,7 @@ services:
     image: nadahm/front
     restart: on-failure
     ports:
-      - 4200:4200
+      - 84:85
 
 
 volumes:

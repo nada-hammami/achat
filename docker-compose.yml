@@ -15,7 +15,7 @@ services:
   achat-backend:
     depends_on:
       - mysqldb
-    image: ichrak12/achat:1.0.0
+    build: ./
     restart: on-failure
     ports:
       - 8089:8089

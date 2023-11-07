@@ -32,7 +32,7 @@ services:
     tty: true
 
   front:
-    image: frontend-achat
+    image: nadahm/front
     restart: on-failure
     ports:
       - 4200:4200

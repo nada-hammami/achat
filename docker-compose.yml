@@ -15,7 +15,7 @@ services:
   achat-backend:
     depends_on:
       - mysqldb
-    image: ghadaouni/achat:1.0
+    image: ghadaouni/achat-1.0
     restart: on-failure
     ports:
       - 8089:8089

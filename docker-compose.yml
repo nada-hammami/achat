@@ -32,11 +32,10 @@ services:
     tty: true
 
   front:
-    image: nadahm/front
+    image: frontend-achat
     restart: on-failure
     ports:
-
-      - 84:85
+      - 4200:4200
 
 
 

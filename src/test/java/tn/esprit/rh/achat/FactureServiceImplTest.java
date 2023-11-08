@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 public class FactureServiceImplTest {
 
 
-    public class DepartementServiceImplTest {
+
 
         @InjectMocks
         FactureServiceImpl factureService;
@@ -55,4 +55,4 @@ public class FactureServiceImplTest {
 
 
     }
-}
+

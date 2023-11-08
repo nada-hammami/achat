@@ -53,6 +53,11 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>3.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 	<distributionManagement>
@@ -79,5 +84,14 @@
 			</plugin>
 		</plugins>
 	</build>
+	<build>
+    <testResources>
+        <testResource>
+            <directory>/home/elbooticcom/workspace/achat/src/test/java/tn/esprit/rh</directory>
+            <!-- Add more <directory> elements for additional directories if needed -->
+        </testResource>
+    </testResources>
+</build>
+
 
 </project>

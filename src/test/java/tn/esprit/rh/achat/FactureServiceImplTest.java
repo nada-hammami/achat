@@ -45,7 +45,7 @@ public class FactureServiceImplTest {
         }
 
         @Test
-        public void testRetrieveAllDepartements() {
+        public void testRetrieveAllFactures() {
             List<Facture> factures = factureService.retrieveAllFactures();
 
             assertEquals(2, factures.size());

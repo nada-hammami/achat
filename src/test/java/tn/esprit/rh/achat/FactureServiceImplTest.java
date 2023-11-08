@@ -46,11 +46,11 @@ public class FactureServiceImplTest {
 
         @Test
         public void testRetrieveAllDepartements() {
-            List<Facture> departements = factureService.retrieveAllFactures();
+            List<Facture> factures = factureService.retrieveAllFactures();
 
-            assertEquals(2, departements.size());
-            assertTrue(departements.stream().anyMatch(d -> d.getMontantFacture() == (20)));
-            assertTrue(departements.stream().anyMatch(d -> d.getMontantRemise() == (40)));
+            assertEquals(2, factures.size());
+            assertTrue(factures.stream().anyMatch(d -> d.getMontantFacture() == (20)));
+            assertTrue(factures.stream().anyMatch(d -> d.getMontantRemise() == (40)));
         }
 
 

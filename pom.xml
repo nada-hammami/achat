@@ -58,7 +58,6 @@
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 	<distributionManagement>
 		<repository>
@@ -67,7 +66,6 @@
 			<url>http://localhost:8081/repository/maven-releases/</url>
 		</repository>
 	</distributionManagement>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -83,15 +81,11 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<testResources>
+			<testResource>
+				<directory>/home/elbooticcom/workspace/achat/src/test/java/tn/esprit/rh</directory>
+				<!-- Add more <directory> elements for additional directories if needed -->
+			</testResource>
+		</testResources>
 	</build>
-	<build>
-    <testResources>
-        <testResource>
-            <directory>/home/elbooticcom/workspace/achat/src/test/java/tn/esprit/rh</directory>
-            <!-- Add more <directory> elements for additional directories if needed -->
-        </testResource>
-    </testResources>
-</build>
-
-
 </project>

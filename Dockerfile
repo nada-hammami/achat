@@ -3,7 +3,7 @@
 # Which version of Node image to use depends on project dependencies 
 # This is needed to build and compile our code 
 # while generating the docker image
-FROM node:20 AS build
+FROM node:16.16-alpine AS build
 # Create a Virtual directory inside the docker image
 WORKDIR /dist/src/app
 # Copy files to virtual directory
@@ -25,4 +25,4 @@ COPY --from=build /dist/src/app/dist/crudtuto-Front /usr/share/nginx/html
 COPY /nginx.conf  /etc/nginx/conf.d/default.conf
 # Exposing a port, here it means that inside the container 
 # the app will be using Port 80 while running
-EXPOSE 85
+EXPOSE 86

@@ -40,11 +40,7 @@ services:
         "spring.jpa.properties.hibernate.dialect": "org.hibernate.dialect.MySQL5InnoDBDialect",
         "spring.jpa.hibernate.ddl-auto": "update"
       }'
-  # Frontend application service
-  front:
-    image: dhiatrabelsi/front:15
-    ports:
-      - "86:86"
+
 
 volumes:
   db :

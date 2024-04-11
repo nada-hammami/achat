@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EtudiantController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.controller</a> &gt; <span class="el_source">EtudiantController.java</span></div><h1>EtudiantController.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.controller;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.com.foyer.entities.Etudiant;
+
+import tn.esprit.com.foyer.entities.Reservation;
+import tn.esprit.com.foyer.services.EtudiantService;
+import tn.esprit.com.foyer.services.IEtudiantService;
+
+import java.util.List;
+
+@RestController
+<span class="nc" id="L16">@AllArgsConstructor</span>
+@CrossOrigin(&quot;http://localhost:4200&quot;)
+@RequestMapping(&quot;/api&quot;)
+public class EtudiantController {
+    IEtudiantService etudiantService;
+EtudiantService etuservice;
+    @GetMapping(&quot;/retrieve-all-etudiant&quot;)
+    List&lt;Etudiant&gt; retrieveAllEtudiants() {
+<span class="nc" id="L24">        return etudiantService.retrieveAllEtudiants();</span>
+
+    }
+
+
+    @PostMapping(&quot;/addetudiant&quot;)
+    public Etudiant addEtudiant(@RequestBody Etudiant e) {
+<span class="nc" id="L31">        return etudiantService.addEtudiant(e);</span>
+
+    }
+
+    @PutMapping(&quot;/updateetudiant&quot;)
+    public Etudiant updateEtudiant(@RequestBody Etudiant e) {
+
+<span class="nc" id="L38">        return etudiantService.updateEtudiant(e);</span>
+
+    }
+
+
+    @GetMapping(&quot;/retrieve-etudiant/{etudiant-id}&quot;)
+    public Etudiant retrieveEtudiant(@PathVariable(&quot;etudiant-id&quot;) Long etudiantId) {
+<span class="nc" id="L45">        return etudiantService.retrieveEtudiant(etudiantId);</span>
+    }
+
+    @DeleteMapping(&quot;/remouve-etudiant/{etudiant-id}&quot;)
+    void removeEtudiant(@PathVariable(&quot;etudiant-id&quot;) Long etudiantId) {
+
+<span class="nc" id="L51">        etudiantService.removeEtudiant(etudiantId);</span>
+<span class="nc" id="L52">    }</span>
+
+    @PostMapping(&quot;/affecterEtudiantAReservation/{nom-et}/{prenom-et}/{id-reservation}&quot;)
+    public Etudiant affecterEtudiantAReservation(@PathVariable(&quot;nom-et&quot;) String nomEt, @PathVariable(&quot;prenom-et&quot;) String prenomEt, @PathVariable(&quot;id-reservation&quot;) Long idReservation) {
+<span class="nc" id="L56">        etudiantService.affecterEtudiantAReservation(nomEt, prenomEt, idReservation);</span>
+<span class="nc" id="L57">        return null;</span>
+    }
+
+    @PostMapping(&quot;/passerUneReservation2/{id-etudiant}/{numC}&quot;)
+    public void passerUneReservation(@PathVariable(&quot;id-etudiant&quot;) long idEtudiant , @RequestBody Reservation res, @PathVariable(&quot;numC&quot;) long numchambre
+    ){
+<span class="nc" id="L63">        etuservice.passerUneReservation2( idEtudiant,  res, numchambre);</span>
+<span class="nc" id="L64">    }</span>
+
+    @GetMapping(&quot;/findEtudiantwithemail/{e-mail}&quot;)
+    @JsonFormat
+    public Etudiant findEtudiantwithemail(@PathVariable(&quot;e-mail&quot;) String email){
+<span class="nc" id="L69">        return etudiantService.findEtudiantwithemail(email);</span>
+
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

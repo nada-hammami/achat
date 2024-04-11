@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChambreController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.controller</a> &gt; <span class="el_source">ChambreController.java</span></div><h1>ChambreController.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.controller;
+
+
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.com.foyer.entities.Chambre;
+import tn.esprit.com.foyer.entities.TypeChambrePourcentage;
+import tn.esprit.com.foyer.services.BlocServices;
+import tn.esprit.com.foyer.services.ChambreServices;
+import java.util.List;
+import java.util.Set;
+
+@RestController
+<span class="nc" id="L15">@AllArgsConstructor</span>
+@CrossOrigin(&quot;http://localhost:4200&quot;)
+@RequestMapping(&quot;/api&quot;)
+public class ChambreController {
+    ChambreServices chambreServices;
+    BlocServices blocServices;
+    @GetMapping(&quot;/chambre/get-all-chambres&quot;)
+    public List&lt;Chambre&gt; retrieveChambres(){
+<span class="nc" id="L23">        return chambreServices.retrieveAllChambre();</span>
+    }
+    @GetMapping(&quot;/admin/chambre/retrieve-chambre/{chambre-id}&quot;)
+    public Chambre retrieveChambre(@PathVariable(&quot;chambre-id&quot;) Long chambreId){
+<span class="nc" id="L27">        return chambreServices.retrieveChambre(chambreId);</span>
+    }
+    @PostMapping(&quot;/admin/chambre/add-chambre&quot;)
+    public Chambre addChambre(@RequestBody Chambre ch){
+<span class="nc" id="L31">        return chambreServices.addChambre(ch);</span>
+    }
+    @PutMapping(&quot;/admin/chambre/update-chambre/{id}&quot;)
+    public ResponseEntity&lt;Chambre&gt; updateChambre(@PathVariable(&quot;id&quot;) Long id, @RequestBody Chambre chambre) {
+<span class="nc" id="L35">        chambre.setIdChambre(id); // Ensure the provided chambre has the correct ID</span>
+<span class="nc" id="L36">        Chambre updatedChambre = chambreServices.updateChambre(chambre);</span>
+<span class="nc" id="L37">        return ResponseEntity.ok(updatedChambre);</span>
+    }
+
+    @DeleteMapping(&quot;/admin/chambre/delete-chambre/{chambre-id}&quot;)
+    public void deleteChambre(@PathVariable(&quot;chambre-id&quot;) Long chambreId){
+<span class="nc" id="L42">        chambreServices.removeChambre(chambreId);</span>
+<span class="nc" id="L43">    }</span>
+    @PutMapping(&quot;/admin/chambre/affecterListeChambre/{nomBloc}&quot;)
+    public void affecterChambreBloc(@PathVariable(&quot;nomBloc&quot;) String nomBloc, @RequestBody List&lt;Long&gt; chambreNumbers) {
+<span class="nc" id="L46">        chambreServices.affecterChambresABloc(chambreNumbers, nomBloc);</span>
+<span class="nc" id="L47">    }</span>
+
+    @GetMapping(&quot;/admin/chambre/calculerPourcentageChambre&quot;)
+    public Set&lt;TypeChambrePourcentage&gt; calculerPourcentageChambre1(@RequestParam boolean estValide) {
+<span class="nc" id="L51">        return chambreServices.calculerPourcentageChambreParTypeChambre1(estValide);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

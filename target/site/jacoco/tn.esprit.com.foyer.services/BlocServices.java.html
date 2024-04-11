@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BlocServices.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.services</a> &gt; <span class="el_source">BlocServices.java</span></div><h1>BlocServices.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.services;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.springframework.stereotype.Service;
+import tn.esprit.com.foyer.entities.Bloc;
+import tn.esprit.com.foyer.entities.Chambre;
+import tn.esprit.com.foyer.entities.Foyer;
+import tn.esprit.com.foyer.entities.TypeChambre;
+import tn.esprit.com.foyer.repositories.BlocRepository;
+import tn.esprit.com.foyer.repositories.ChambreRepository;
+import tn.esprit.com.foyer.repositories.FoyerRepository;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.*;
+
+@Service
+<span class="nc" id="L23">@Slf4j</span>
+<span class="nc" id="L24">@AllArgsConstructor</span>
+public class BlocServices implements IBlocService{
+    BlocRepository blocRepository;
+    FoyerRepository foyerRepository;
+    ChambreRepository chambreRepository;
+
+    @Override
+    public List&lt;Bloc&gt; retrieveAllBlocs() {
+<span class="nc" id="L32">        return blocRepository.findAll();</span>
+    }
+
+    @Override
+    public Bloc addBloc(Bloc b) {
+<span class="nc" id="L37">        return blocRepository.save(b);</span>
+    }
+
+    @Override
+    public Bloc updateBloc(Bloc b) {
+<span class="nc" id="L42">        return blocRepository.save(b);</span>
+    }
+
+    @Override
+    public Bloc retrieveBloc(Long idBloc) {
+<span class="nc" id="L47">        Optional&lt;Bloc&gt; optionalBloc = blocRepository.findById(idBloc);</span>
+<span class="nc" id="L48">        return optionalBloc.orElse(null);</span>
+    }
+
+
+    @Override
+    public void removeBloc(Long idBloc) {
+<span class="nc" id="L54">        blocRepository.deleteById(idBloc);</span>
+<span class="nc" id="L55">    }</span>
+
+
+    @Override
+    public byte[] generatePdfForBloc(Bloc bloc) throws IOException {
+        // Génère le PDF en utilisant la méthode auxiliaire
+<span class="nc" id="L61">        return generatePdf(bloc);</span>
+    }
+
+    public byte[] generatePdf(Bloc bloc) throws IOException {
+        // Crée un nouveau document PDF
+<span class="nc" id="L66">        PDDocument document = new PDDocument();</span>
+
+        // Ajoute une nouvelle page au document
+<span class="nc" id="L69">        PDPage page = new PDPage();</span>
+<span class="nc" id="L70">        document.addPage(page);</span>
+
+        // Utilise un flux de contenu pour ajouter du texte à la page
+<span class="nc" id="L73">        try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {</span>
+            // Titre du PDF
+<span class="nc" id="L75">            addText(contentStream, &quot;Chambres du Bloc : &quot; + bloc.getNomBloc(), 20, 700, PDType1Font.HELVETICA_BOLD, 12);</span>
+
+            // Liste des chambres
+<span class="nc" id="L78">            List&lt;Chambre&gt; chambres = List.copyOf(bloc.getChambre());</span>
+
+<span class="nc" id="L80">            float currentYOffset = 580; // Ajustez la valeur initiale selon vos besoins</span>
+
+<span class="nc bnc" id="L82" title="All 2 branches missed.">            for (Chambre chambre : chambres) {</span>
+<span class="nc" id="L83">                contentStream.beginText();</span>
+<span class="nc" id="L84">                contentStream.newLineAtOffset(20, currentYOffset);</span>
+
+                // Concatène le numéro de la chambre et son statut dans la même ligne
+<span class="nc" id="L87">                String chambreInfo = &quot;Chambre numéro : &quot; + chambre.getNumeroChambre() +</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">                        &quot; - Statut : &quot; + (chambre.getReservations() != null &amp;&amp; !chambre.getReservations().isEmpty() ? &quot;Réservée&quot; : &quot;Non Réservée&quot;);</span>
+
+<span class="nc" id="L90">                contentStream.showText(chambreInfo);</span>
+<span class="nc" id="L91">                contentStream.newLineAtOffset(0, -20);</span>
+<span class="nc" id="L92">                contentStream.endText();</span>
+
+<span class="nc" id="L94">                currentYOffset -= 40; // Ajustez la valeur en fonction de l'espacement souhaité entre les chambres</span>
+<span class="nc" id="L95">            }</span>
+        }
+
+        // Convertit le document en tableau d'octets
+<span class="nc" id="L99">        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();</span>
+<span class="nc" id="L100">        document.save(byteArrayOutputStream);</span>
+<span class="nc" id="L101">        document.close();</span>
+
+        // Retourne le tableau d'octets représentant le fichier PDF
+<span class="nc" id="L104">        return byteArrayOutputStream.toByteArray();</span>
+    }
+
+    private void addText(PDPageContentStream contentStream, String text, float xOffset, float yOffset, PDType1Font font, int fontSize) throws IOException {
+<span class="nc" id="L108">        contentStream.beginText();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (font != null) {</span>
+<span class="nc" id="L110">            contentStream.setFont(font, fontSize);</span>
+        }
+<span class="nc" id="L112">        contentStream.newLineAtOffset(xOffset, yOffset);</span>
+<span class="nc" id="L113">        contentStream.showText(text);</span>
+<span class="nc" id="L114">        contentStream.newLineAtOffset(0, -20);</span>
+<span class="nc" id="L115">        contentStream.endText();</span>
+<span class="nc" id="L116">    }</span>
+
+    @Override
+    public List&lt;Map&lt;String, Object&gt;&gt; obtenirInfosBlocsParFoyer() {
+<span class="nc" id="L120">        List&lt;Map&lt;String, Object&gt;&gt; foyersInfos = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L122">        List&lt;Foyer&gt; foyers = foyerRepository.findAll();</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        for (Foyer foyer : foyers) {</span>
+<span class="nc" id="L124">            Map&lt;String, Object&gt; foyerInfo = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L125">            foyerInfo.put(&quot;nomFoyer&quot;, foyer.getNomFoyer());</span>
+
+<span class="nc" id="L127">            int capaciteActuelleFoyer = 0; // Initialize current capacity of the foyer</span>
+
+<span class="nc" id="L129">            List&lt;Map&lt;String, Object&gt;&gt; blocsInfos = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L130">            List&lt;Bloc&gt; blocs = blocRepository.findByFoyer(foyer);</span>
+
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            for (Bloc bloc : blocs) {</span>
+<span class="nc" id="L133">                Map&lt;String, Object&gt; blocInfo = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L134">                blocInfo.put(&quot;nomBloc&quot;, bloc.getNomBloc());</span>
+
+<span class="nc" id="L136">                int capaciteActuelleBloc = 0; // Initialize current capacity of the bloc</span>
+<span class="nc" id="L137">                int capaciteMaxBloc = 0;</span>
+
+<span class="nc" id="L139">                List&lt;Map&lt;String, Object&gt;&gt; chambresInfos = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L140">                List&lt;Chambre&gt; chambres = chambreRepository.findByBloc(bloc);</span>
+
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                for (Chambre chambre : chambres) {</span>
+<span class="nc" id="L143">                    int capaciteChambre = determinerCapaciteChambre(chambre.getTypeC());</span>
+<span class="nc" id="L144">                    int placesNonReservees = capaciteChambre - chambre.getReservations().size();</span>
+
+
+<span class="nc" id="L147">                    Map&lt;String, Object&gt; chambreInfo = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L148">                    chambreInfo.put(&quot;numeroChambre&quot;, chambre.getNumeroChambre());</span>
+<span class="nc" id="L149">                    chambreInfo.put(&quot;capaciteMax de chambre&quot;, capaciteChambre);</span>
+<span class="nc" id="L150">                    chambreInfo.put(&quot;capaciteActuelle de chambre&quot;, placesNonReservees);</span>
+<span class="nc" id="L151">                    chambreInfo.put(&quot;placesNonReservees&quot;, placesNonReservees);</span>
+
+<span class="nc" id="L153">                    chambresInfos.add(chambreInfo);</span>
+<span class="nc" id="L154">                    capaciteActuelleBloc += placesNonReservees; // Accumulate current capacity of each chambre</span>
+<span class="nc" id="L155">                    capaciteMaxBloc += capaciteChambre; // Accumulate maximum capacity of each chambre</span>
+<span class="nc" id="L156">                }</span>
+
+<span class="nc" id="L158">                blocInfo.put(&quot;chambres&quot;, chambresInfos);</span>
+<span class="nc" id="L159">                blocInfo.put(&quot;capaciteMax de bloc&quot;, bloc.getCapaciteBloc());</span>
+
+<span class="nc bnc" id="L161" title="All 4 branches missed.">                if (capaciteActuelleBloc &lt;= bloc.getCapaciteBloc() &amp;&amp; capaciteActuelleBloc &lt;= foyer.getCapaciteFoyer()) {</span>
+<span class="nc" id="L162">                    blocInfo.put(&quot;charge Actuelle de bloc&quot;, capaciteActuelleBloc);</span>
+<span class="nc" id="L163">                    blocsInfos.add(blocInfo);</span>
+<span class="nc" id="L164">                    capaciteActuelleFoyer += capaciteActuelleBloc;</span>
+                }
+<span class="nc" id="L166">            }</span>
+
+
+<span class="nc" id="L169">            foyerInfo.put(&quot;blocs&quot;, blocsInfos);</span>
+<span class="nc" id="L170">            foyerInfo.put(&quot;capaciteMax de foyer &quot;, foyer.getCapaciteFoyer());</span>
+<span class="nc" id="L171">            foyerInfo.put(&quot;charge Actuelle de foyer&quot;, capaciteActuelleFoyer);</span>
+<span class="nc" id="L172">            foyersInfos.add(foyerInfo);</span>
+<span class="nc" id="L173">        }</span>
+
+<span class="nc" id="L175">        return foyersInfos;</span>
+    }
+
+
+
+
+
+    @Override
+    public List&lt;Map&lt;String, Object&gt;&gt; obtenirInfos() {
+<span class="nc" id="L184">        List&lt;Map&lt;String, Object&gt;&gt; foyersInfos = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L186">        List&lt;Foyer&gt; foyers = foyerRepository.findAll();</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        for (Foyer foyer : foyers) {</span>
+<span class="nc" id="L188">            Map&lt;String, Object&gt; foyerInfo = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L189">            foyerInfo.put(&quot;nomFoyer&quot;, foyer.getNomFoyer());</span>
+<span class="nc" id="L190">            foyerInfo.put(&quot;capaciteMaxFoyer&quot;, foyer.getCapaciteFoyer());</span>
+
+<span class="nc" id="L192">            List&lt;Map&lt;String, Object&gt;&gt; blocsInfos = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L193">            List&lt;Bloc&gt; blocs = blocRepository.findByFoyer(foyer);</span>
+
+<span class="nc bnc" id="L195" title="All 2 branches missed.">            for (Bloc bloc : blocs) {</span>
+<span class="nc" id="L196">                Map&lt;String, Object&gt; blocInfo = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L197">                blocInfo.put(&quot;nomBloc&quot;, bloc.getNomBloc());</span>
+<span class="nc" id="L198">                blocInfo.put(&quot;capaciteMaxBloc&quot;, bloc.getCapaciteBloc());</span>
+
+<span class="nc" id="L200">                List&lt;Map&lt;String, Object&gt;&gt; chambresInfos = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L201">                List&lt;Chambre&gt; chambres = chambreRepository.findByBloc(bloc);</span>
+
+<span class="nc bnc" id="L203" title="All 2 branches missed.">                for (Chambre chambre : chambres) {</span>
+<span class="nc" id="L204">                    int capaciteChambre = determinerCapaciteChambre(chambre.getTypeC());</span>
+<span class="nc" id="L205">                    Map&lt;String, Object&gt; chambreInfo = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L206">                    chambreInfo.put(&quot;numeroChambre&quot;, chambre.getNumeroChambre());</span>
+<span class="nc" id="L207">                    chambreInfo.put(&quot;capaciteChambre&quot;, capaciteChambre);</span>
+<span class="nc" id="L208">                    chambresInfos.add(chambreInfo);</span>
+<span class="nc" id="L209">                }</span>
+
+<span class="nc" id="L211">                blocInfo.put(&quot;chambres&quot;, chambresInfos);</span>
+<span class="nc" id="L212">                blocInfo.put(&quot;capaciteMaxBloc&quot;, bloc.getCapaciteBloc());</span>
+<span class="nc" id="L213">                blocsInfos.add(blocInfo);</span>
+<span class="nc" id="L214">            }</span>
+
+<span class="nc" id="L216">            foyerInfo.put(&quot;blocs&quot;, blocsInfos);</span>
+<span class="nc" id="L217">            foyerInfo.put(&quot;capaciteMaxFoyer&quot;, foyer.getCapaciteFoyer()); // &lt;-- Remove extra space here</span>
+<span class="nc" id="L218">            foyersInfos.add(foyerInfo);</span>
+<span class="nc" id="L219">        }</span>
+
+<span class="nc" id="L221">        return foyersInfos;</span>
+    }
+
+
+
+
+
+    private int determinerCapaciteChambre(TypeChambre typeChambre) {
+<span class="nc bnc" id="L229" title="All 4 branches missed.">        switch (typeChambre) {</span>
+            case SIMPLE:
+<span class="nc" id="L231">                return 1;</span>
+            case DOUBLE:
+<span class="nc" id="L233">                return 2;</span>
+            case TRIPLE:
+<span class="nc" id="L235">                return 3;</span>
+            default:
+<span class="nc" id="L237">                return 0;</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

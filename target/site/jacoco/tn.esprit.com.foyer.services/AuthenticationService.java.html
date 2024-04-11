@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthenticationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.services</a> &gt; <span class="el_source">AuthenticationService.java</span></div><h1>AuthenticationService.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.services;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import tn.esprit.com.foyer.entities.*;
+import tn.esprit.com.foyer.repositories.EtudiantRepository;
+import tn.esprit.com.foyer.requests.AuthenticationRequest;
+import tn.esprit.com.foyer.requests.AuthenticationResponse;
+import tn.esprit.com.foyer.requests.RegisterRequest;
+import tn.esprit.com.foyer.config.JwtService;
+import tn.esprit.com.foyer.repositories.UserRepository;
+
+import java.io.IOException;
+
+@Service
+<span class="nc" id="L28">@Slf4j</span>
+<span class="nc" id="L29">@RequiredArgsConstructor</span>
+public class AuthenticationService {
+  private final UserRepository repository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
+  private final EtudiantRepository etudiantRepository;
+
+  public ResponseEntity register(RegisterRequest request) {
+<span class="nc" id="L38">    User user1 = repository.findByEmail(request.getEmail());</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    if (user1 != null) {</span>
+<span class="nc" id="L40">      return ResponseEntity.status(HttpStatus.CONFLICT)</span>
+<span class="nc" id="L41">              .body(AuthenticationResponse.builder()</span>
+<span class="nc" id="L42">                      .error(&quot;Email already exists&quot;)</span>
+<span class="nc" id="L43">                      .build());</span>
+    }
+
+<span class="nc" id="L46">    var user = User.builder()</span>
+<span class="nc" id="L47">            .firstname(request.getFirstname())</span>
+<span class="nc" id="L48">            .lastname(request.getLastname())</span>
+<span class="nc" id="L49">            .email(request.getEmail())</span>
+<span class="nc" id="L50">            .password(passwordEncoder.encode(request.getPassword()))</span>
+<span class="nc" id="L51">            .role(Role.USER)</span>
+<span class="nc" id="L52">            .build();</span>
+<span class="nc" id="L53">    repository.save(user);</span>
+<span class="nc" id="L54">    var jwtToken = jwtService.generateToken(user);</span>
+<span class="nc" id="L55">    jwtService.generateRefreshToken(user);</span>
+<span class="nc" id="L56">    return ResponseEntity.status(HttpStatus.ACCEPTED)</span>
+<span class="nc" id="L57">            .body(AuthenticationResponse.builder()</span>
+<span class="nc" id="L58">                    .accessToken(jwtToken)</span>
+<span class="nc" id="L59">                    .build());</span>
+
+  }
+
+  public ResponseEntity authenticate(AuthenticationRequest request) {
+    AuthenticationResponse response;
+<span class="nc" id="L65">    User user = repository.findByEmail(request.getEmail());</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    if (user == null) {</span>
+      // Return error if email doesn't exist
+<span class="nc" id="L68">      return ResponseEntity.status(HttpStatus.CONFLICT)</span>
+<span class="nc" id="L69">              .body(AuthenticationResponse.builder()</span>
+<span class="nc" id="L70">                      .error(&quot;Email not found&quot;)</span>
+<span class="nc" id="L71">                      .build());</span>
+    }
+
+    try {
+<span class="nc" id="L75">      authenticationManager.authenticate(</span>
+              new UsernamePasswordAuthenticationToken(
+<span class="nc" id="L77">                      request.getEmail(),</span>
+<span class="nc" id="L78">                      request.getPassword()</span>
+              )
+      );
+
+<span class="nc" id="L82">      var jwtToken = jwtService.generateToken(user);</span>
+<span class="nc" id="L83">      jwtService.extractClaim(jwtToken, claims -&gt; {</span>
+<span class="nc" id="L84">        ObjectMapper objectMapper = new ObjectMapper();</span>
+        try {
+<span class="nc" id="L86">          return objectMapper.writeValueAsString(claims);</span>
+<span class="nc" id="L87">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L88">          e.printStackTrace();</span>
+<span class="nc" id="L89">          return null;</span>
+        }
+      });
+<span class="nc" id="L92">      response = AuthenticationResponse.builder()</span>
+<span class="nc" id="L93">              .accessToken(jwtToken)</span>
+<span class="nc" id="L94">              .build();</span>
+<span class="nc" id="L95">    } catch (BadCredentialsException e) {</span>
+<span class="nc" id="L96">      return ResponseEntity.status(HttpStatus.CONFLICT)</span>
+<span class="nc" id="L97">              .body(AuthenticationResponse.builder()</span>
+<span class="nc" id="L98">                      .error(&quot;Incorrect Password&quot;)</span>
+<span class="nc" id="L99">                      .build());</span>
+<span class="nc" id="L100">    }</span>
+
+<span class="nc" id="L102">    return ResponseEntity.status(HttpStatus.ACCEPTED)</span>
+<span class="nc" id="L103">            .body(response);</span>
+  }
+
+
+
+
+
+
+
+  public void refreshToken(
+          HttpServletRequest request,
+          HttpServletResponse response
+  ) throws IOException {
+<span class="nc" id="L116">    final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);</span>
+    final String refreshToken;
+    final String userEmail;
+<span class="nc bnc" id="L119" title="All 4 branches missed.">    if (authHeader == null ||!authHeader.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="nc" id="L120">      return;</span>
+    }
+<span class="nc" id="L122">    refreshToken = authHeader.substring(7);</span>
+<span class="nc" id="L123">    userEmail = jwtService.extractUsername(refreshToken);</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">    if (userEmail != null) {</span>
+<span class="nc" id="L125">      User user = this.repository.findByEmail(userEmail);</span>
+
+<span class="nc bnc" id="L127" title="All 2 branches missed.">      if (jwtService.isTokenValid(refreshToken, user)) {</span>
+<span class="nc" id="L128">        var accessToken = jwtService.generateToken(user);</span>
+
+<span class="nc" id="L130">        var authResponse = AuthenticationResponse.builder()</span>
+<span class="nc" id="L131">                .accessToken(accessToken)</span>
+<span class="nc" id="L132">                .build();</span>
+<span class="nc" id="L133">        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);</span>
+      }
+    }
+<span class="nc" id="L136">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

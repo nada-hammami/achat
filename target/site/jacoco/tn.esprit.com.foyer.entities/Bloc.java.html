@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Bloc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.entities</a> &gt; <span class="el_source">Bloc.java</span></div><h1>Bloc.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.entities;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+
+@Getter
+<span class="nc" id="L13">@Builder</span>
+<span class="nc" id="L14">@Setter</span>
+<span class="nc" id="L15">@Slf4j</span>
+<span class="nc" id="L16">@AllArgsConstructor</span>
+<span class="nc" id="L17">@NoArgsConstructor</span>
+@Entity
+@Table(name = &quot;Bloc&quot;)
+public class Bloc implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name=&quot;idBloc&quot;)
+<span class="nc" id="L24">    private Long idBloc; // Clé primaire</span>
+<span class="nc" id="L25">    private String nomBloc;</span>
+<span class="nc" id="L26">    private Long capaciteBloc;</span>
+<span class="nc" id="L27">    private Etaat etat;</span>
+    @ManyToOne
+<span class="nc" id="L29">    Foyer foyer;</span>
+    @JsonIgnore
+
+    @OneToMany(mappedBy=&quot;bloc&quot; , cascade = CascadeType.ALL )
+<span class="nc" id="L33">    private List&lt;Chambre&gt; chambre;</span>
+    @Transient
+    @OneToMany(mappedBy = &quot;bm&quot;, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+<span class="nc" id="L36">    private Set&lt;Maintenance&gt; maintenances;</span>
+    public Long getId() {
+<span class="nc" id="L38">        return this.idBloc;</span>
+    }
+
+    // Setter pour id
+    public void setId(Long id) {
+<span class="nc" id="L43">        this.idBloc = id;</span>
+<span class="nc" id="L44">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

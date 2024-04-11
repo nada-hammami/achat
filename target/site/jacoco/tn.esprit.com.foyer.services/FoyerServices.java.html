@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FoyerServices.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.services</a> &gt; <span class="el_source">FoyerServices.java</span></div><h1>FoyerServices.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.services;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import tn.esprit.com.foyer.entities.Etaat;
+
+import tn.esprit.com.foyer.entities.Foyer;
+import tn.esprit.com.foyer.entities.TypeBlocPourcentage;
+import tn.esprit.com.foyer.repositories.BlocRepository;
+import tn.esprit.com.foyer.repositories.FoyerRepository;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+<span class="nc" id="L16">@Slf4j</span>
+@Service
+<span class="nc" id="L18">@AllArgsConstructor</span>
+public class FoyerServices implements IFoyerService{
+    FoyerRepository foyerRepository;
+BlocRepository blocRepository;
+    @Override
+    public List&lt;Foyer&gt; retrieveAllFoyers() {
+<span class="nc" id="L24">        return foyerRepository.findAll();</span>
+    }
+
+    @Override
+    public Foyer addFoyer(Foyer f) {
+<span class="nc" id="L29">        return foyerRepository.save(f);</span>
+    }
+
+    @Override
+    public Foyer updateFoyer(Foyer f) {
+<span class="nc" id="L34">        return foyerRepository.save(f);</span>
+    }
+
+    @Override
+    public Foyer retrieveFoyer(long idFoyer) {
+<span class="nc" id="L39">        return foyerRepository.findById(idFoyer).orElse(null);</span>
+    }
+
+    @Override
+    public void archiverFoyer(long idFoyer) {
+<span class="nc" id="L44">        Foyer f = foyerRepository.findById(idFoyer).orElse(null);</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (f != null) {</span>
+<span class="nc" id="L46">            f.setArchived(true);</span>
+<span class="nc" id="L47">            foyerRepository.save(f);</span>
+        } else {
+<span class="nc" id="L49">            log.info(&quot;foyer not found&quot;);</span>
+        }
+<span class="nc" id="L51">    }</span>
+
+    @Override
+    public void deleteFoyer(long idFoyer) {
+<span class="nc" id="L55">        foyerRepository.deleteById(idFoyer);</span>
+<span class="nc" id="L56">    }</span>
+
+
+    public Set&lt;TypeBlocPourcentage&gt; calculerPourcentageBlocParEtat() {
+<span class="nc" id="L60">        Long totalBlocsTotal = blocRepository.count();</span>
+<span class="nc" id="L61">        Set&lt;TypeBlocPourcentage&gt; resultSet = new HashSet&lt;&gt;();</span>
+
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        for (Etaat etat : Etaat.values()) {</span>
+<span class="nc" id="L64">            Float result = blocRepository.nbrBlocParEtat(etat);</span>
+
+
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            float pourcentage = (result != null ? result : 0.0f) * 100.0f / totalBlocsTotal;</span>
+
+<span class="nc" id="L69">            TypeBlocPourcentage blocInfo = new TypeBlocPourcentage(etat, pourcentage);</span>
+<span class="nc" id="L70">            resultSet.add(blocInfo);</span>
+        }
+
+<span class="nc" id="L73">        return resultSet;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

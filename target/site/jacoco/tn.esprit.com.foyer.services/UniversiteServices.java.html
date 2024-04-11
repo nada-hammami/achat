@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UniversiteServices.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.services</a> &gt; <span class="el_source">UniversiteServices.java</span></div><h1>UniversiteServices.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.services;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import tn.esprit.com.foyer.entities.Foyer;
+import tn.esprit.com.foyer.entities.Universite;
+import tn.esprit.com.foyer.repositories.FoyerRepository;
+import tn.esprit.com.foyer.repositories.UniversteRepository;
+
+import java.util.List;
+import java.util.Optional;
+<span class="fc" id="L13">@Slf4j</span>
+@Service
+<span class="fc" id="L15">@AllArgsConstructor</span>
+public class UniversiteServices implements IUniversiteService{
+    UniversteRepository universteRepository;
+    FoyerRepository foyerRepository;
+
+    @Override
+    public List&lt;Universite&gt; retrieveAllUniversities() {
+<span class="fc" id="L22">        return universteRepository.findAll();</span>
+    }
+
+    @Override
+    public Universite addUniversity(Universite u) {
+<span class="nc" id="L27">        return universteRepository.save(u);</span>
+    }
+
+    @Override
+    public Universite updateUniversity(Universite u) {
+<span class="nc" id="L32">        return universteRepository.save(u);</span>
+    }
+
+    @Override
+    public Universite retrieveUniversity(long idUniversite) {
+<span class="fc" id="L37">        Optional&lt;Universite&gt; optionalUniversite = universteRepository.findById(idUniversite);</span>
+<span class="fc" id="L38">        return optionalUniversite.orElse(null);</span>
+    }
+
+    @Override
+    public void removeUniversity(long idUniversite) {
+<span class="fc" id="L43">        universteRepository.deleteById(idUniversite);</span>
+<span class="fc" id="L44">    }</span>
+
+
+
+
+    public Universite affecterFoyerUniversite(long idFoyer, String nomUniversite) {
+<span class="nc" id="L50">        Optional&lt;Foyer&gt; optionalFoyer = foyerRepository.findById(idFoyer);</span>
+<span class="nc" id="L51">        Optional&lt;Universite&gt; optionalUniversite = universteRepository.findByNomUniversite(nomUniversite);</span>
+
+<span class="nc bnc" id="L53" title="All 4 branches missed.">        if (optionalFoyer.isPresent() &amp;&amp; optionalUniversite.isPresent()) {</span>
+<span class="nc" id="L54">            Foyer f = optionalFoyer.get();</span>
+<span class="nc" id="L55">            Universite u = optionalUniversite.get();</span>
+
+<span class="nc" id="L57">            u.setFoyer(f);</span>
+<span class="nc" id="L58">            universteRepository.save(u);</span>
+<span class="nc" id="L59">            return u;</span>
+        } else {
+<span class="nc" id="L61">            log.info(&quot;Foyer or Universite not found&quot;);</span>
+<span class="nc" id="L62">            return null; // Or handle the case differently based on your requirements</span>
+        }
+    }
+
+    public Universite desaffeecterFoyerUniversite(String nomUniversite) {
+<span class="nc" id="L67">        Optional&lt;Universite&gt; optionalUniversite = universteRepository.findByNomUniversite(nomUniversite);</span>
+
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (optionalUniversite.isPresent()) {</span>
+<span class="nc" id="L70">            Universite universite = optionalUniversite.get();</span>
+<span class="nc" id="L71">            universite.setFoyer(null);</span>
+<span class="nc" id="L72">            universteRepository.save(universite);</span>
+<span class="nc" id="L73">            return universite;</span>
+        } else {
+<span class="nc" id="L75">            log.info(&quot;Universite not found with name: &quot; + nomUniversite);</span>
+<span class="nc" id="L76">            return null; // Or handle the case differently based on your requirements</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

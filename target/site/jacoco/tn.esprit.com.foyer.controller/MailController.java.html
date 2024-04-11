@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MailController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.controller</a> &gt; <span class="el_source">MailController.java</span></div><h1>MailController.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.controller;
+
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.com.foyer.mailmodel.MailStructure;
+import tn.esprit.com.foyer.services.IMailService;
+
+@RestController
+<span class="nc" id="L9">@AllArgsConstructor</span>
+@CrossOrigin(&quot;http://localhost:4200&quot;)
+
+@RequestMapping(&quot;/mailer&quot;)
+public class MailController {
+    IMailService mailService;
+
+    @PostMapping(&quot;/sendMail/{e-mail}&quot;)
+    public String sendMail(@PathVariable(&quot;e-mail&quot;) String mail, @RequestBody MailStructure mailStructure){
+<span class="nc" id="L18">        mailService.sendMail(mail,mailStructure);</span>
+<span class="nc" id="L19">        return &quot;mail send with success !!&quot;;</span>
+    }
+
+    @GetMapping(&quot;/sendMailToStudentWithValidReservation&quot;)
+    public String sendMailToStudentWithValidReservation(){
+<span class="nc" id="L24">        mailService.sendMailToStudentWithValidReservation();</span>
+<span class="nc" id="L25">        return &quot;this student has a valid reservation&quot;;</span>
+    }
+
+    @PostMapping (&quot;/sendMailToStudentWithValidReservation2&quot;)
+    public String sendMailToStudentWithValidReservation2(@RequestBody MailStructure mailStructure){
+<span class="nc" id="L30">        mailService.sendMailToStudentWithValidReservation2(mailStructure);</span>
+<span class="nc" id="L31">        return &quot;mail sent to student succeffully!!&quot;;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

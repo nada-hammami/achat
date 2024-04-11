@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BlocController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.controller</a> &gt; <span class="el_source">BlocController.java</span></div><h1>BlocController.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.controller;
+
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.com.foyer.entities.Bloc;
+import tn.esprit.com.foyer.services.BlocServices;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@CrossOrigin(&quot;http://localhost:4200&quot;)
+<span class="nc" id="L18">    @AllArgsConstructor</span>
+    @RequestMapping(&quot;/api&quot;)
+    public class BlocController {
+        BlocServices blocServices;
+        @GetMapping(&quot;bloc/retrieve-all-bloc&quot;)
+        public List&lt;Bloc&gt; retrieveAllBloc(){
+<span class="nc" id="L24">            return blocServices.retrieveAllBlocs();</span>
+        }
+        @GetMapping(&quot;/admin/retrieve-bloc/{bloc-id}&quot;)
+        public Bloc retrieveBloc(@PathVariable(&quot;bloc-id&quot;) Long blocId){
+<span class="nc" id="L28">            return blocServices.retrieveBloc(blocId);</span>
+        }
+
+        @PostMapping(&quot;/admin/add-bloc&quot;)
+        public Bloc addBloc(@RequestBody Bloc bloc){
+<span class="nc" id="L33">            return blocServices.addBloc(bloc);</span>
+        }
+        @PutMapping(&quot;/admin/update-bloc&quot;)
+<span class="nc" id="L36">        public Bloc updateBloc(@RequestBody Bloc bloc){return  blocServices.updateBloc(bloc);}</span>
+
+        @DeleteMapping(&quot;/admin/delete-bloc/{bloc-id}&quot;)
+        public void deleteBloc(@PathVariable(&quot;bloc-id&quot;) Long blocId){
+<span class="nc" id="L40">            blocServices.removeBloc(blocId);</span>
+<span class="nc" id="L41">        }</span>
+    @GetMapping(&quot;/admin/{id}/generate-pdf&quot;)
+    public ResponseEntity&lt;byte[]&gt; generateChambrePdf(@PathVariable Long id) throws IOException {
+<span class="nc" id="L44">        Bloc bloc = blocServices.retrieveBloc(id);// ... remplacez par votre logique d'obtention d'utilisateur</span>
+        // Générez le PDF
+<span class="nc" id="L46">        byte[] pdfBytes = blocServices.generatePdfForBloc(bloc);</span>
+<span class="nc" id="L47">        HttpHeaders headers = new HttpHeaders(); headers.setContentType(MediaType.APPLICATION_PDF); headers.setContentDispositionFormData(&quot;inline&quot;, &quot;bloc.pdf&quot;);</span>
+<span class="nc" id="L48">        return new ResponseEntity&lt;&gt;(pdfBytes, headers, HttpStatus.OK); }</span>
+
+
+    @GetMapping(&quot;/bloc/infos-blocs&quot;)
+    public ResponseEntity&lt;List&lt;Map&lt;String, Object&gt;&gt;&gt; obtenirInfosBlocsParFoyer() {
+<span class="nc" id="L53">        List&lt;Map&lt;String, Object&gt;&gt; blocsInfos = blocServices.obtenirInfosBlocsParFoyer();</span>
+<span class="nc" id="L54">        return new ResponseEntity&lt;&gt;(blocsInfos, HttpStatus.OK);</span>
+    }
+    @GetMapping(&quot;/bloc/infos&quot;)
+    public ResponseEntity&lt;List&lt;Map&lt;String, Object&gt;&gt;&gt; obtenirInfos() {
+<span class="nc" id="L58">        List&lt;Map&lt;String, Object&gt;&gt; blocsInfos = blocServices.obtenirInfos();</span>
+<span class="nc" id="L59">        return new ResponseEntity&lt;&gt;(blocsInfos, HttpStatus.OK);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

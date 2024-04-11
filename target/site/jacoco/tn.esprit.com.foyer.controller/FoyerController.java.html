@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FoyerController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Foyer</a> &gt; <a href="index.source.html" class="el_package">tn.esprit.com.foyer.controller</a> &gt; <span class="el_source">FoyerController.java</span></div><h1>FoyerController.java</h1><pre class="source lang-java linenums">package tn.esprit.com.foyer.controller;
+
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tn.esprit.com.foyer.entities.Foyer;
+import tn.esprit.com.foyer.entities.TypeBlocPourcentage;
+import tn.esprit.com.foyer.services.FoyerServices;
+import tn.esprit.com.foyer.services.MaintenanceServices;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+import java.util.Set;
+
+@RestController
+<span class="nc" id="L19">@AllArgsConstructor</span>
+@CrossOrigin(&quot;http://localhost:4200&quot;)
+@RequestMapping(&quot;/api&quot;)
+public class FoyerController {
+    FoyerServices foyerServices;
+MaintenanceServices maintenanceServices;
+    @GetMapping(&quot;/retrieve-all-foyer&quot;)
+    public List&lt;Foyer&gt; retrieveAllFoyer(){
+<span class="nc" id="L27">        return foyerServices.retrieveAllFoyers();</span>
+    }
+
+    @GetMapping(&quot;/admin/foyer/retrieve-foyer/{foyer-id}&quot;)
+    public Foyer retrieveFoyer(@PathVariable(&quot;foyer-id&quot;) Long foyerId){
+<span class="nc" id="L32">        return foyerServices.retrieveFoyer(foyerId);</span>
+    }
+
+    @PostMapping(&quot;/admin/foyer/add-foyer&quot;)
+    public Foyer addFoyer(@RequestBody Foyer f){
+<span class="nc" id="L37">        return foyerServices.addFoyer(f);</span>
+    }
+    @DeleteMapping(&quot;/admin/foyer/delete-foyer/{foyer-id}&quot;)
+    public void deleteFoyer(@PathVariable(&quot;foyer-id&quot;) Long foyerId){
+<span class="nc" id="L41">        foyerServices.deleteFoyer(foyerId);</span>
+<span class="nc" id="L42">    }</span>
+
+    @PostMapping(&quot;/admin/foyer/archiver-foyer/{foyer-id}&quot;)
+    public void archiverFoyer(@PathVariable(&quot;foyer-id&quot;) Long foyerId){
+<span class="nc" id="L46">        foyerServices.archiverFoyer(foyerId);</span>
+<span class="nc" id="L47">    }</span>
+    @GetMapping(&quot;/admin/foyer/pourcentage-par-etat&quot;)
+    public ResponseEntity&lt;Set&lt;TypeBlocPourcentage&gt;&gt; calculerPourcentageBlocParEtat() {
+<span class="nc" id="L50">        Set&lt;TypeBlocPourcentage&gt; pourcentages = foyerServices.calculerPourcentageBlocParEtat();</span>
+<span class="nc" id="L51">        return new ResponseEntity&lt;&gt;(pourcentages, HttpStatus.OK);</span>
+    }
+    @PutMapping(&quot;/admin/modifier-foyer/{id}&quot;)
+<span class="nc" id="L54">    public  Foyer updatefoyer(@PathVariable(&quot;id&quot;) @RequestBody  Foyer foyer){ return foyerServices.updateFoyer(foyer);}</span>
+    @GetMapping(&quot;/admin/foyer/export&quot;)
+    public void exportToExcel(HttpServletResponse response) {
+        try {
+            // Appeler la méthode du service pour obtenir le workbook
+<span class="nc" id="L59">            Workbook workbook = maintenanceServices.exportToExcel();</span>
+
+            // Définir le contentType pour forcer le téléchargement
+<span class="nc" id="L62">            response.setContentType(&quot;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet&quot;);</span>
+<span class="nc" id="L63">            response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment; filename=maintenance_report.xlsx&quot;);</span>
+
+<span class="nc" id="L65">            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();</span>
+<span class="nc" id="L66">            workbook.write(outputStream);</span>
+<span class="nc" id="L67">            workbook.close();</span>
+
+
+<span class="nc" id="L70">            response.getOutputStream().write(outputStream.toByteArray());</span>
+
+<span class="nc" id="L72">            response.getOutputStream().flush();</span>
+<span class="nc" id="L73">            response.getOutputStream().close();</span>
+<span class="nc" id="L74">            outputStream.close();</span>
+
+<span class="nc" id="L76">        } catch (Exception e) {</span>
+<span class="nc" id="L77">            e.printStackTrace();</span>
+<span class="nc" id="L78">        }</span>
+<span class="nc" id="L79">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,55 @@
+<div class="row">
+  <div class="col">
+    <div class="card shadow">
+      <div class="card-header border-0">
+        <h3 class="mb-0">Foyers</h3>
+        <button class="btn btn-success" routerLink="/add-foyer">Ajouter Foyer</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-items-center table-flush">
+          <thead class="thead-light">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Capacité</th>
+            <th scope="col">Actions</th>
+            <th scope="col">Blocs</th> <!-- New column header here -->
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let foyerItem of foyer; let i = index">
+            <th scope="row">
+              {{ foyerItem.idFoyer }}
+            </th>
+            <td>
+              {{ foyerItem.nomFoyer }}
+            </td>
+            <td>
+              {{ foyerItem.capaciteFoyer }}
+            </td>
+
+            <td>
+              <button class="btn btn-primary rounded-btn mr-3" type="button"
+                      [routerLink]="['/edit-foyer', foyerItem.idFoyer]">
+                <i class="fas fa-pen"></i>
+              </button>
+              <button class="btn btn-primary rounded-btn" type="button"
+                      (click)="deleteFoyer(foyerItem.idFoyer)">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+            <td>
+              <!-- New action button column -->
+              <button class="btn btn-info" type="button"
+                      [routerLink]="['/afficher-bloc', foyerItem.idFoyer]">
+                Special Action
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

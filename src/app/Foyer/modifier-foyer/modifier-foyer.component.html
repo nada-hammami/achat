@@ -1,0 +1,73 @@
+<!-- Existing nom du foyer field -->
+<div class="col-lg-6">
+  <div class="form-group">
+    <label class="form-control-label" for="input-nom">Nom du foyer</label>
+    <input
+      type="text"
+      id="input-nom"
+      class="form-control form-control-alternative"
+      placeholder="Nom du foyer"
+      name="nom"
+      [(ngModel)]="foyer.nomFoyer"
+      required
+      #nom="ngModel"
+    />
+    <div *ngIf="nom.errors?.['required']" class="alert alert-danger" role="alert">
+      <i class="fas fa-exclamation-triangle mr-2"></i>
+      Le nom du foyer est obligatoire.
+    </div>
+
+    <label class="form-control-label" for="input-capacite">Capacité du foyer</label>
+    <input
+      type="number"
+      id="input-capacite"
+      class="form-control form-control-alternative"
+      placeholder="Capacité du foyer"
+      name="capacite"
+      [(ngModel)]="foyer.capaciteFoyer"
+      required
+      #capacite="ngModel"
+    />
+    <div *ngIf="capacite.errors?.['required']">
+      <div class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        La capacité du foyer est obligatoire.
+      </div>
+    </div>
+    </div>
+</div>
+<!-- Add a radio button group for the 'archiver' status -->
+<div class="col-lg-6">
+  <div class="form-group">
+    <label class="form-control-label" for="archive-status">Archivé</label>
+    <div class="d-flex">
+      <div class="custom-control custom-radio custom-control-inline">
+        <input
+          type="radio"
+          id="archiveYes"
+          name="archiver"
+          class="custom-control-input"
+          [(ngModel)]="foyer.archived"
+          [value]="true"
+          #archiver="ngModel"
+        />
+        <label class="custom-control-label" for="archiveYes">Oui</label>
+      </div>
+      <div class="custom-control custom-radio custom-control-inline">
+        <input
+          type="radio"
+          id="archiveNo"
+          name="archiver"
+          class="custom-control-input"
+          [(ngModel)]="foyer.archived"
+          [value]="false"
+          #archiver="ngModel"
+        />
+        <label class="custom-control-label" for="archiveNo">Non</label>
+      </div>
+     <button type="button" class="btn btn-secondary" (click)="modifierFoyer()">
+        Modifier
+      </button>
+    </div>
+  </div>
+</div>

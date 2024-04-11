@@ -1,0 +1,24 @@
+<section>
+  <br>
+  <br>
+</section>
+<form #chambreForm="ngForm" (ngSubmit)="onSubmit()">
+  <!--div class="form-group">
+    <label for="idChambre">ID de la chambre:</label>
+    <input type="number" class="form-control" id="idChambre" name="idChambre" [(ngModel)]="chambre.idChambre" required>
+  </div-->
+
+  <div class="form-group">
+    <label for="numeroChambre">Numéro de la chambre:</label>
+    <input type="number" class="form-control" id="numeroChambre" name="numeroChambre" [(ngModel)]="chambre.numeroChambre" required>
+  </div>
+
+  <div class="form-group">
+    <label for="typeC">Type de chambre:</label>
+    <select class="form-control" id="typeC" name="typeC" [(ngModel)]="chambre.typeC" required>
+      <option *ngFor="let type of typesChambre" [value]="type">{{ type }}</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Enregistrer</button>
+</form>

@@ -1,0 +1,52 @@
+
+<div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Blocs</h3>
+          <button >Ajouter</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">NomBloc</th>
+                <th scope="col">Capacité</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Utilisez ici *ngFor pour parcourir les données des blocs -->
+              <tr *ngFor="let blocItem of blocs; let i = index">
+                <th scope="row">
+                  {{ blocItem.idBloc }}
+                </th>
+                <td>
+                  <a  routerLinkActive="active" [routerLink]="['/chambres']" >{{ blocItem.nomBloc}}</a>
+                </td>
+                <td>
+                  {{ blocItem.capaciteBloc }}
+                </td>
+                <td >
+                  <div class="dropdown">
+                    <a class="btn btn-sm  text-light" href="#" role="button" 
+                      aria-haspopup="true" aria-expanded="false">
+                     
+                    </a>
+                    <div >
+                      <!-- Ajout de deux boutons dans chaque ligne -->
+                      <button (click)="redirigerVersChambres()">Modifier</button>
+                      <button >Supprimer</button>
+                      
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  

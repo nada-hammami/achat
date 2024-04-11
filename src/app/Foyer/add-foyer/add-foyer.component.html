@@ -1,0 +1,58 @@
+<div class="container-fluid mt--7">
+  <!-- Table -->
+  <!-- Light table -->
+  <div class="row">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Ajouter un foyer</h3>
+        </div>
+        <div class="card-body">
+          <button type="button" class="btn btn-secondary" (click)="cancel()">Annuler</button>
+          <form #foyerForm="ngForm" (ngSubmit)="saveFoyer()">
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="input-nom" class="form-control-label">Nom du foyer</label>
+                    <input type="text" id="input-nom" class="form-control form-control-alternative" name="nomFoyer" [(ngModel)]="foyer.nomFoyer" required #nomFoyer="ngModel" placeholder="Nom du foyer" />
+                    <div *ngIf="nomFoyer.invalid && nomFoyer.touched" class="alert alert-danger" role="alert">
+                      Le nom du foyer est obligatoire.
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="input-capacite" class="form-control-label">Capacité du foyer</label>
+                    <input type="number" id="input-capacite" class="form-control form-control-alternative" name="capaciteFoyer" [(ngModel)]="foyer.capaciteFoyer" required #capaciteFoyer="ngModel" min="1"/>
+                    <div *ngIf="capaciteFoyer.invalid && capaciteFoyer.touched" class="alert alert-danger" role="alert">
+                      La capacité du foyer est obligatoire et doit être positive.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label for="input-archived" class="form-control-label">Archive</label>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" id="archivedTrue" name="archived" class="custom-control-input" [(ngModel)]="foyer.archived" value="true" #archived="ngModel" />
+                      <label class="custom-control-label" for="archivedTrue">Oui</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                      <input type="radio" id="archivedFalse" name="archived" class="custom-control-input" [(ngModel)]="foyer.archived" value="false" #archived="ngModel" />
+                      <label class="custom-control-label" for="archivedFalse">Non</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pl-lg-4">
+              <button type="submit" class="btn btn-primary" [disabled]="foyerForm.invalid">Ajouter foyer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

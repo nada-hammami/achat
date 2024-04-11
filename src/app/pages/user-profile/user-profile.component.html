@@ -1,0 +1,253 @@
+<div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
+  style="min-height: 600px; background-image: url(assets/img/theme/profile-cover.jpg); background-size: cover; background-position: center top;">
+  <!-- Mask -->
+  <span class="mask bg-gradient-danger opacity-8"></span>
+  <!-- Header container -->
+  <div class="container-fluid d-flex align-items-center">
+    <div class="row">
+      <div class="col-lg-7 col-md-10">
+        <h1 class="display-2 text-white">Hello {{connectedStudent.nomEt }}</h1>
+        <p class="text-white mt-0 mb-5">This is your profile page. You can see the progress you've made with your work
+          and manage your projects or assigned tasks</p>
+        <button type="button" class="btn btn-primary" (click)="openModel()" data-bs-toggle="modal"
+          data-bs-target="#myModal"> Edit Profile </button>
+
+          <button type="button" class="btn btn-primary" (click)="openChangePasswordModel()" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</button>
+
+      </div>
+    </div>
+  </div>
+  <!-- Start Change Password PopUp Model-->
+<div class="modal" id="changePasswordModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Change Password</h4>
+        <button type="button" (click)="closeChangePasswordModel()" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body" id="changePasswordModal">
+        <div class="card-body">
+          <form [formGroup]="changePasswordForm" (ngSubmit)="changePassword()">
+            <h6 class="heading-small text-muted mb-4">Change Password</h6>
+            <div class="pl-lg-4">
+              <div class="form-group">
+                <label class="form-control-label" for="currentPassword">Current Password</label>
+                <input type="password" id="currentPassword" formControlName="currentPassword" class="form-control form-control-alternative" placeholder="Current Password">
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="newPassword">New Password</label>
+                <input type="password" id="newPassword" formControlName="newPassword" class="form-control form-control-alternative" placeholder="New Password">
+              </div>
+              <div class="form-group">
+                <label class="form-control-label" for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control form-control-alternative" placeholder="Confirm Password">
+              </div>
+            </div>
+            <hr class="my-4" />
+          </form>
+          <div  *ngIf="serverMessage"  class="alert alert-danger text-center mx-3" role="alert">
+            {{serverMessage}}
+     </div>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success" (click)="changePassword()">Submit</button>
+          <button type="button" (click)="closeChangePasswordModel()" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Change Password PopUp Model-->
+
+  <!-- Start Update Profile PopUp Model-->
+  <!-- Modal -->
+  <div class="modal" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Edit Profile</h4>
+          <button type="button" (click)="closeModel()" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="card-body">
+            <form [formGroup]="userProfileForm" (ngSubmit)="EditProfile()">
+              <h6 class="heading-small text-muted mb-4">User information</h6>
+              <div class="pl-lg-4">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="nom">Nom</label>
+                      <input type="text" id="nom" formControlName="nom" class="form-control form-control-alternative"
+                        placeholder="nom" value={{connectedStudent.nomEt}}>
+                    </div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="prenom">Prenom</label>
+                      <input type="text" id="prenom" formControlName="prenom"
+                        class="form-control form-control-alternative" placeholder="cin"
+                        value={{connectedStudent.prenomEt}}>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="cin">Cin</label>
+                      <input type="int" id="cin" formControlName="cin" class="form-control form-control-alternative"
+                        placeholder="cin" value={{connectedStudent.cin}}>
+                    </div>
+                  </div>
+                </div>
+                <p>{{connectedStudent.idEtudiant}}</p>
+              </div>
+              <hr class="my-4" />
+            </form>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success" (click)="EditProfile()">Submit</button>
+            <button type="button" (click)="closeModel()" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<!-- End Update Profile PopUp Model-->
+<!-- Start Show All Reservations Table-->
+<div class="container-fluid mt--7">
+  <div class="row" *ngIf="connectedStudent.reservations && connectedStudent.reservations.length > 0">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h3 class="mb-0">Your Existing Reservations</h3>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Id Reservation</th>
+                <th scope="col">Année Universitaire</th>
+                <th scope="col">Validation</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let reservation of connectedStudent.reservations">
+                <th scope="row">
+                  <div class="media align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                      class="bi bi-folder" viewBox="0 0 16 16">
+                      <path
+                        d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31zM2.19 4a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4H2.19zm4.69-1.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707z" />
+                    </svg>
+                    <div class="media-body">
+                      <span class="mb-0 text-sm">{{ reservation.idReservation }}</span>
+                    </div>
+                  </div>
+                </th>
+                <td>
+                  {{ reservation.anneeUniversitaire }}
+                </td>
+                <td>
+                  <span *ngIf="reservation.estValid" class="text-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green"
+                      class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                      <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+                    </svg>
+                    Valid
+                  </span>
+                  <span *ngIf="!reservation.estValid" class="text-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red"
+                      class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                      <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM7 11h2v2H7v-2zm0-8h2v6H7V3z" />
+                    </svg>
+                    Not Valid
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Show All Reservations Table-->
+<!--Start Add reservation -->
+<br>
+<br>
+<div class="d-flex justify-content-center">
+  <button type="button" class="btn btn-primary" (click)="openModel2()" data-bs-toggle="Modal"
+    data-bs-target="#newModal">Ajouter Reservation </button>
+</div>
+<br>
+<br>
+
+<!-- Start add Reservation PopUp Model-->
+<!-- Modal -->
+<div class="modal" id="newModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Passer Reservation</h4>
+        <button type="button" (click)="closeModel2()" class="btn-close" data-bs-dismiss="newmodal"></button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div class="card-body">
+          <form [formGroup]="addReservationForm" (ngSubmit)="addReservation()">
+            <h6 class="heading-small text-muted mb-4">Reservation information</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="idReservation">idReservation</label>
+                    <input type="text" id="idReservation" formControlName="idReservation"
+                      class="form-control form-control-alternative" placeholder="idReservation">
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="anneeUniversitaire">Année Universitaire</label>
+                    <input type="text" id="anneeUniversitaire" formControlName="anneeUniversitaire"
+                      class="form-control form-control-alternative" placeholder="AnnéeUniversitaire">
+                  </div>
+                </div>
+              </div>
+              <p>{{connectedStudent.idEtudiant}}</p>
+            </div>
+            <hr class="my-4" />
+          </form>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success" (click)="addReservation()">Submit</button>
+          <button type="button" (click)="closeModel2()" class="btn btn-danger" data-bs-dismiss="newmodal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--End Add reservation -->

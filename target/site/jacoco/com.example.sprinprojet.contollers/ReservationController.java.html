@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.contollers</a> &gt; <span class="el_source">ReservationController.java</span></div><h1>ReservationController.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.contollers;
+
+
+import com.example.sprinprojet.entity.Reservation;
+import com.example.sprinprojet.entity.Status;
+import com.example.sprinprojet.services.EmailService;
+import com.example.sprinprojet.services.IReservationService;
+
+import com.example.sprinprojet.services.ReservationServiceImp;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+<span class="nc" id="L18">@AllArgsConstructor</span>
+@RequestMapping(&quot;/reservation&quot;)
+public class ReservationController {
+    IReservationService iReservationService;
+    ReservationServiceImp reservationServiceImp;
+    EmailService emailService;
+    @GetMapping(&quot;/retrieve-all-Reservations&quot;)
+
+    public List&lt;Reservation&gt; getReservationList(){
+<span class="nc" id="L27">        List&lt;Reservation&gt;reservationList=iReservationService.retrieveAllReservations();</span>
+<span class="nc" id="L28">        return reservationList;</span>
+    }
+
+    @PostMapping(&quot;/add-Reservation&quot;)
+    public Reservation addReservation(@RequestBody Reservation r) {
+<span class="nc" id="L33">        Reservation reservation = iReservationService.addReservation(r);</span>
+<span class="nc" id="L34">        return reservation;</span>
+    }
+    @GetMapping(&quot;/retrieve-Reservation/{Reservation-id}&quot;)
+    public Reservation retrieveReservation(@PathVariable(&quot;Reservation-id&quot;) String reservationId) {
+<span class="nc" id="L38">        return iReservationService.retrieveReservation(reservationId);</span>
+    }
+    @DeleteMapping(&quot;/remove-Reservation/{Reservation-id}&quot;)
+    public void removeReservation(@PathVariable(&quot;Reservation-id&quot;) String idReservation) {
+<span class="nc" id="L42">        iReservationService.removeReservation(idReservation);</span>
+<span class="nc" id="L43">    }</span>
+    @PutMapping(&quot;/update-Reservation&quot;)
+    public Reservation updateReservation(@RequestBody Reservation r) {
+<span class="nc" id="L46">        Reservation reservation= iReservationService.updateReservation(r);</span>
+<span class="nc" id="L47">        return reservation;</span>
+    }
+    @GetMapping(&quot;/getmail/{Reservation-id}&quot;)
+    public String getMail(@PathVariable (&quot;Reservation-id&quot;)String reservationid){
+<span class="nc" id="L51">        return reservationServiceImp.getStudentEmail(reservationid);</span>
+    }
+    @PostMapping(&quot;/confirm/{reservationId}&quot;)
+    public ResponseEntity&lt;String&gt; confirmReservation(@PathVariable String reservationId) {
+        // Confirmer la réservation
+<span class="nc" id="L56">        reservationServiceImp.confirmReservation(reservationId);</span>
+
+        // Récupérer les e-mails des étudiants associés à la réservation
+<span class="nc" id="L59">        String studentEmail = reservationServiceImp.getStudentEmail(reservationId);</span>
+
+        // Envoyer un e-mail de confirmation à chaque étudiant
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (studentEmail != null) {</span>
+            // Envoyer un e-mail de confirmation à l'étudiant
+<span class="nc" id="L64">            emailService.sendConfirmationEmail(studentEmail, &quot;Confirmation de réservation&quot;, &quot;Votre réservation a été confirmée avec succès.&quot;);</span>
+
+<span class="nc" id="L66">            return ResponseEntity.ok(&quot;Confirmation en cours. Un e-mail sera envoyé à l'étudiant.&quot;);</span>
+        } else {
+<span class="nc" id="L68">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(&quot;Erreur lors de la récupération de l'e-mail de l'étudiant.&quot;);</span>
+        }
+    }
+    @PutMapping(&quot;/{reservationId}/update-status&quot;)
+    public ResponseEntity&lt;String&gt; updateReservationStatus(
+            @PathVariable String reservationId,
+            @RequestParam Status newStatus) {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (reservationServiceImp.updateReservationStatus(reservationId, newStatus)) {</span>
+<span class="nc" id="L76">            return ResponseEntity.ok(&quot;Statut de la réservation mis à jour avec succès.&quot;);</span>
+        } else {
+<span class="nc" id="L78">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(&quot;Réservation non trouvée.&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

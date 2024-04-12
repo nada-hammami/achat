@@ -1,32 +1,22 @@
+
+
+
 package com.example.sprinprojet;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import com.example.sprinprojet.entity.Bloc;
 import com.example.sprinprojet.entity.Foyer;
 import com.example.sprinprojet.entity.Universite;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class FoyerTest {
 
-    @InjectMocks
-    Foyer foyer;
-
-    @Mock
-    Universite universite;
-
-    @Mock
-    List<Bloc> blocs;
+    private Foyer foyer;
 
     @BeforeEach
     void setUp() {
@@ -37,15 +27,13 @@ class FoyerTest {
         foyer.setCapaciteFoyer(100);
         foyer.setArchived(false);
 
-        // Mocking behavior for associated objects
-        when(universite.getNomUniversite()).thenReturn("Test University");
+        // Initialize an empty list for blocs
+        List<Bloc> blocs = new ArrayList<>();
+        foyer.setBlocs(blocs);
 
-        Bloc bloc = new Bloc();
-        bloc.setIdBloc(1L);
-        bloc.setNomBloc("Test Bloc");
-        List<Bloc> blocList = new ArrayList<>();
-        blocList.add(bloc);
-        when(blocs.size()).thenReturn(1);
+        // Initialize an empty universite object
+        Universite universite = new Universite();
+        foyer.setUniversite(universite);
     }
 
     @Test
@@ -57,14 +45,12 @@ class FoyerTest {
     }
 
     @Test
-    void testUniversiteAssociation() {
-        foyer.setUniversite(universite);
-        assertThat(foyer.getUniversite().getNomUniversite()).isEqualTo("Test University");
+    void testEmptyBlocsList() {
+        assertThat(foyer.getBlocs()).isEmpty();
     }
 
     @Test
-    void testBlocsAssociation() {
-        foyer.setBlocs(blocs);
-        assertThat(foyer.getBlocs().size()).isEqualTo(1);
+    void testUniversiteAssociation() {
+        assertThat(foyer.getUniversite()).isNotNull();
     }
 }

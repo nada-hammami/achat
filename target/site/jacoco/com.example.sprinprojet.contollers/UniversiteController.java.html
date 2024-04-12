@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UniversiteController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.contollers</a> &gt; <span class="el_source">UniversiteController.java</span></div><h1>UniversiteController.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.contollers;
+
+
+import com.example.sprinprojet.entity.Universite;
+import com.example.sprinprojet.services.IUniversiteService;
+
+import com.example.sprinprojet.services.UniversiteServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+@CrossOrigin(origins = &quot;http://localhost:4200&quot;) // Replace with the actual origin of your Angular app
+@RestController
+<span class="nc" id="L17">@AllArgsConstructor</span>
+@RequestMapping(&quot;/universite&quot;)
+
+public class UniversiteController {
+    private IUniversiteService universiteService;
+
+    @Operation(description = &quot;Get a list of all universities&quot;)
+    @GetMapping(&quot;/retrieve-all-universities&quot;)
+    public List&lt;Universite&gt; getUniversities() {
+<span class="nc" id="L26">        List&lt;Universite&gt; listUniversities = universiteService.retrieveAllUniversites();</span>
+<span class="nc" id="L27">        return listUniversities;</span>
+    }
+
+    @Operation(description = &quot;Get a university by ID&quot;)
+    @GetMapping(&quot;/retrieve-university/{university-id}&quot;)
+    public Universite retrieveUniversite(@PathVariable(&quot;university-id&quot;) Long UniversityId) {
+<span class="nc" id="L33">        return universiteService.retrieveUniversites(UniversityId);</span>
+    }
+
+    @Operation(description = &quot;Add a new university&quot;)
+    @PostMapping(&quot;/add-university&quot;)
+    public Universite addUniversite(@RequestBody Universite e) {
+<span class="nc" id="L39">        Universite universite = universiteService.addUniversites(e);</span>
+<span class="nc" id="L40">        return universite;</span>
+    }
+
+    @Operation(description = &quot;Remove a university by ID&quot;)
+    @DeleteMapping(&quot;/remove-university/{university-id}&quot;)
+    public void removeUniversite(@PathVariable(&quot;university-id&quot;) Long foyerId) {
+<span class="nc" id="L46">        universiteService.removeUniversites(foyerId);</span>
+<span class="nc" id="L47">    }</span>
+
+    @Operation(description = &quot;Update a university&quot;)
+    @PutMapping(&quot;/update-university&quot;)
+    public Universite updateUniversite(@RequestBody Universite u) {
+<span class="nc" id="L52">        Universite universite= universiteService.updateUniversites(u);</span>
+<span class="nc" id="L53">        return universite;</span>
+    }
+
+    @Operation(description = &quot;Set a foyer for a university&quot;)
+    @PutMapping(&quot;/setfoyer/{idfoyer}/{nomuniversite}&quot;)
+    public Universite setFoyer(@PathVariable (&quot;idfoyer&quot;) Long foyerId,@PathVariable(&quot;nomuniversite&quot;) String nomUniversite) {
+<span class="nc" id="L59">        Universite universite = universiteService.affecterFoyerAUniversite(foyerId,nomUniversite);</span>
+<span class="nc" id="L60">        return universite;</span>
+    }
+
+    @Operation(description = &quot;unSet a foyer for a university&quot;)
+    @PutMapping(&quot;/unsetfoyer/{idfoyer}&quot;)
+    public Universite unsetFoyer(@PathVariable (&quot;idfoyer&quot;) Long foyerId) {
+<span class="nc" id="L66">        Universite universite = universiteService.desaffecterFoyerAUniversite(foyerId);</span>
+<span class="nc" id="L67">        return universite;</span>
+    }
+
+    @GetMapping(&quot;/rechercheParNom/{nomuniversite}&quot;)
+    List&lt;Universite&gt; rechercheParNom(@PathVariable(&quot;nomuniversite&quot;) String nomUniversite){
+<span class="nc" id="L72">        return universiteService.rechercheParNom(nomUniversite);</span>
+    }
+
+    @GetMapping(&quot;/{id}/qr-code&quot;)
+    public ResponseEntity&lt;byte[]&gt; generateQRCode(@PathVariable Long id) {
+<span class="nc" id="L77">        Universite universite = universiteService.retrieveUniversites(id);</span>
+<span class="nc" id="L78">        byte[] qrCode = universiteService.generateQRCode(universite);</span>
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (qrCode != null) {</span>
+<span class="nc" id="L81">            return ResponseEntity.ok().header(&quot;Content-Disposition&quot;, &quot;attachment; filename=qr-code.png&quot;).body(qrCode);</span>
+        } else {
+<span class="nc" id="L83">            return ResponseEntity.badRequest().build();</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

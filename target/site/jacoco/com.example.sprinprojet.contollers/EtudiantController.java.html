@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EtudiantController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.contollers</a> &gt; <span class="el_source">EtudiantController.java</span></div><h1>EtudiantController.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.contollers;
+
+import com.example.sprinprojet.entity.Etudiant;
+import com.example.sprinprojet.entity.Universite;
+import com.example.sprinprojet.services.EtudiantServiceImp;
+import com.example.sprinprojet.services.IEtudiantService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+<span class="nc" id="L19">@AllArgsConstructor</span>
+@CrossOrigin(origins = &quot;http://localhost:50313&quot;)
+@RequestMapping(&quot;/etudiant&quot;)
+public class EtudiantController {
+    EtudiantServiceImp iEtudiantService;
+
+    @GetMapping(&quot;/retrieve-all-etudiants&quot;)
+
+    public List&lt;Etudiant&gt;getEtudiantList(){
+<span class="nc" id="L28">        List&lt;Etudiant&gt;etudiantList=iEtudiantService.retrieveAllEtudiants();</span>
+<span class="nc" id="L29">        return etudiantList;</span>
+    }
+
+
+    @PostMapping(&quot;/add-etudiant&quot;)
+    public Etudiant addEtudiant(@RequestBody Etudiant e) {
+<span class="nc" id="L35">        Etudiant etudiant = iEtudiantService.addEtudiant(e);</span>
+<span class="nc" id="L36">        return etudiant;</span>
+    }
+    @GetMapping(&quot;/retrieve-etudiant/{etudiant-id}&quot;)
+    @Operation(description=&quot;recuperer etudiants par id&quot;)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode=&quot;200&quot;,description=&quot;found etudiant&quot;,
+                    content={ @Content(mediaType  =&quot;application/json&quot; ,
+                            schema = @Schema(implementation=Etudiant.class))}),
+            @ApiResponse(responseCode=&quot;400&quot;,description=&quot; non valid id&quot;, content=@Content),
+            @ApiResponse(responseCode=&quot;404&quot;,description=&quot; not found&quot;, content=@Content)
+    }
+    )
+    @ResponseBody
+    public Etudiant retrieveEtudiant(    @Parameter(description = &quot;id&quot;) @PathVariable(&quot;etudiant-id&quot;) Long etudiantId) {
+<span class="nc" id="L50">        return iEtudiantService.retrieveEtudiant(etudiantId);</span>
+    }
+    @DeleteMapping(&quot;/remove-etudiant/{etudiant-id}&quot;)
+    public void removeEtudiant(@PathVariable(&quot;etudiant-id&quot;) Long idEtudiant) {
+<span class="nc" id="L54">        iEtudiantService.removeEtudiant(idEtudiant);</span>
+<span class="nc" id="L55">    }</span>
+    /*@PutMapping(&quot;/update-etudiant/{idEtudiant}&quot;)
+    public Etudiant updateEtudiant(@PathVariable(&quot;idEtudiant&quot;) Long idEtudiant ,@RequestBody Etudiant e) {
+        Etudiant etudiant= iEtudiantService.updateEtudiant(e);
+        return etudiant;
+    }*/
+    @PutMapping(&quot;/update-etudiant/{id}&quot;)
+    public Etudiant updateEtudiantByID(@PathVariable(&quot;id&quot;) Long idEtudiant, @RequestBody Etudiant updatedEtudiant) {
+<span class="nc" id="L63">        return iEtudiantService.updateEtudiantAndReservations(idEtudiant, updatedEtudiant);</span>
+    }
+
+    @PostMapping(&quot;/add-all-etudiants&quot;)
+    public List addAllEtudiants(@RequestBody List&lt;Etudiant&gt;etudiants){
+<span class="nc" id="L68">        List Listetudiant=iEtudiantService.addEtudiants(etudiants);</span>
+<span class="nc" id="L69">        return Listetudiant;</span>
+    }
+    @PutMapping(&quot;/affecterEtRe/{idreservation}/{nom}/{prenom}&quot;)
+    public Etudiant affecter(@PathVariable(&quot;prenom&quot;) String prenom ,@PathVariable(&quot;idreservation&quot;) String idReservation, @PathVariable(&quot;nom&quot;) String nom){
+<span class="nc" id="L73">        Etudiant etudiant=iEtudiantService.affecterEtudiantAReservation( nom,  prenom,  idReservation);</span>
+<span class="nc" id="L74">        return etudiant;</span>
+
+
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

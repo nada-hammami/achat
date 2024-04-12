@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChambreServiceImp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.services</a> &gt; <span class="el_source">ChambreServiceImp.java</span></div><h1>ChambreServiceImp.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.services;
+
+import com.example.sprinprojet.entity.Bloc;
+import com.example.sprinprojet.entity.Chambre;
+import com.example.sprinprojet.entity.Reservation;
+import com.example.sprinprojet.entity.TypeChambre;
+import com.example.sprinprojet.repository.BlocRepository;
+import com.example.sprinprojet.repository.ChambreRepository;
+import com.example.sprinprojet.repository.FoyerRepository;
+import com.example.sprinprojet.repository.ReservationRepository;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import lombok.AllArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear;
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
+
+@Service
+<span class="nc" id="L33">@AllArgsConstructor</span>
+public class ChambreServiceImp implements IChambreService {
+   ChambreRepository chambreRepository ;
+   BlocRepository blocRepository;
+   FoyerRepository foyerRepository;
+   ReservationRepository reservationRepository;
+  private final JavaMailSender javaMailSender;
+
+   @Override
+   public List&lt;Chambre&gt; retrieveAllChambres() {
+<span class="nc" id="L43">      return chambreRepository.findAll();</span>
+   }
+
+   @Override
+   public Chambre addChambre(Chambre ch) {
+<span class="nc" id="L48">      return chambreRepository.save(ch);</span>
+   }
+
+   @Override
+   public Chambre updateChambre(Chambre ch) {
+<span class="nc" id="L53">      return chambreRepository.save(ch);</span>
+   }
+
+   @Override
+   public Chambre retrieveChambre(Long idChambre) {
+<span class="nc" id="L58">      return chambreRepository.findById(idChambre).get();</span>
+   }
+
+   @Override
+   public void removeChambre(Long idChambre) {
+<span class="nc" id="L63">      chambreRepository.deleteById(idChambre);</span>
+
+<span class="nc" id="L65">   }</span>
+
+
+
+    public Set&lt;Chambre&gt;getChambreParNomBloc(String nomb){
+<span class="nc" id="L70">      Bloc b =blocRepository.findByNomBloc(nomb);</span>
+<span class="nc" id="L71">      Set&lt;Chambre&gt; chambre=b.getChambres();</span>
+<span class="nc" id="L72">      return chambre;</span>
+}
+   /*@Override
+   @Scheduled(fixedRate = 60000)
+   public void pourcentageChambreParTypeChambre() {
+
+       List&lt;Chambre&gt; chambreByType = chambreRepository.findAll();
+      long nb = chambreByType.stream().count();
+     long  countParTypeSIMPLE = chambreRepository.countChambresByTypeC(TypeChambre.SIMPLE);
+      long countParTypeDOUBLE = chambreRepository.countChambresByTypeC(TypeChambre.DOUBLE);
+      long countParTypeTRIPLE = chambreRepository.countChambresByTypeC(TypeChambre.TRIPLE);
+      System.out.println(&quot;Le nombre total des chambres est :&quot; +nb);
+      System.out.println(&quot;Le pourcentage des chambres de type SIMPLE est :&quot; +(countParTypeSIMPLE*100)/nb);
+      System.out.println(&quot;Le pourcentage des chambres de type DOUBLE est :&quot; +(countParTypeDOUBLE*100)/nb);
+      System.out.println(&quot;Le pourcentage des chambres de type TRIPLE est :&quot; +(countParTypeTRIPLE*100)/nb);
+
+
+   }*/
+  /* @Scheduled(fixedRate = 60000)
+   void nbPlacesDispo(){
+List&lt;Chambre&gt;ch =chambreRepository.findAll();
+   int x=0;
+   int currentYear= LocalDate.now().getYear();
+   LocalDate instance =LocalDate.now().withYear(currentYear);
+      LocalDate dateStart = instance.with(firstDayOfYear());
+      LocalDate dateEnd = instance.with(lastDayOfYear());
+      for (Chambre chambre : ch) {
+         List&lt;Reservation&gt; availablePlaces = reservationRepository.findByChambreNumeroChambreAndEstValideAndAnneeUniversitaireBetween(chambre.getNumeroChambre(),true,dateStart,dateEnd );
+         int nbplace =availablePlaces.size();
+         if(chambre.getTypeC() == TypeChambre.SIMPLE)
+            x = 1;
+         if(chambre.getTypeC() == TypeChambre.DOUBLE)
+            x = 2;
+         if(chambre.getTypeC() == TypeChambre.TRIPLE)
+            x = 3;
+         if((x - nbplace) &gt; 0)
+         {
+            System.out.println(&quot;Chambre ID: &quot; + chambre.getIdChambre() +
+                    &quot;, Places disponibles: &quot; + (x - nbplace)  +
+                    &quot; pour l'année en cours.&quot;+ currentYear);
+         }
+         else
+            System.out.println(&quot;nombre de place est negative&quot;);
+
+      }
+   }*/
+
+  public byte[] generateQRCode(Chambre chambre) throws IOException, WriterException {
+<span class="nc" id="L120">    String chambreDetails = &quot;Chambre: &quot; + chambre.getNumeroChambre() ;</span>
+
+<span class="nc" id="L122">    Map&lt;EncodeHintType, Object&gt; hintMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L123">    hintMap.put(EncodeHintType.ERROR_CORRECTION, &quot;L&quot;);</span>
+<span class="nc" id="L124">    hintMap.put(EncodeHintType.CHARACTER_SET, &quot;UTF-8&quot;);</span>
+
+<span class="nc" id="L126">    QRCodeWriter qrCodeWriter = new QRCodeWriter();</span>
+<span class="nc" id="L127">    BitMatrix bitMatrix = qrCodeWriter.encode(chambreDetails, BarcodeFormat.QR_CODE, 300, 300, hintMap);</span>
+
+<span class="nc" id="L129">    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();</span>
+<span class="nc" id="L130">    MatrixToImageWriter.writeToStream(bitMatrix, &quot;PNG&quot;, byteArrayOutputStream);</span>
+
+<span class="nc" id="L132">    return byteArrayOutputStream.toByteArray();</span>
+  }
+
+
+
+
+  @Override
+  @Scheduled(cron = &quot;0 1 * * * *&quot;)
+  public void pourcentageChambreParTypeChambre() {
+
+<span class="nc" id="L142">    Map&lt;TypeChambre, List&lt;Chambre&gt;&gt; chambreByType = chambreRepository.findAll()</span>
+<span class="nc" id="L143">      .stream()</span>
+<span class="nc" id="L144">      .collect(Collectors.groupingBy(Chambre::getTypeC));</span>
+
+
+<span class="nc" id="L147">    long totalchbres = chambreRepository.count();</span>
+<span class="nc" id="L148">    chambreByType.forEach((type, chbres) -&gt; {</span>
+<span class="nc" id="L149">      double pourcentage = (chbres.size() * 100.0) / totalchbres;</span>
+<span class="nc" id="L150">      System.out.printf(&quot;nbre total des chbres&quot;+chambreByType.get(totalchbres)+&quot;le pourcentage de chmbre par type Type chambre &quot;, type, pourcentage);</span>
+<span class="nc" id="L151">    });</span>
+<span class="nc" id="L152">  }</span>
+  public List&lt;Chambre&gt; getChambresParNomBloc(String nomBloc) {
+    // Use the BlocRepository to find the Bloc entity by nomBloc
+<span class="nc" id="L155">    Bloc bloc = blocRepository.findByNomBloc(nomBloc);</span>
+
+<span class="nc bnc" id="L157" title="All 2 branches missed.">    if (bloc != null) {</span>
+      // If the Bloc is found, retrieve the associated Chambres
+<span class="nc" id="L159">      Set&lt;Chambre&gt; chambres = bloc.getChambres();</span>
+<span class="nc" id="L160">      return new ArrayList&lt;&gt;(chambres); // Convert the Set to a List</span>
+    } else {
+      // Handle the case where no Bloc is found by the given nomBloc
+<span class="nc" id="L163">      return Collections.emptyList(); // Return an empty list or handle the situation as needed</span>
+    }
+  }
+
+  public long nbChambreParTypeEtBloc(TypeChambre type, long idBloc) {
+<span class="nc" id="L168">    return chambreRepository.countByTypeCAndBloc_IdBloc(type, idBloc);</span>
+  }
+
+
+
+
+
+  @Override
+  public void sendEmail(String to, String subject, String body) {
+<span class="nc" id="L177">    SimpleMailMessage message = new SimpleMailMessage();</span>
+<span class="nc" id="L178">    message.setTo(to);</span>
+<span class="nc" id="L179">    message.setSubject(subject);</span>
+<span class="nc" id="L180">    message.setText(body);</span>
+<span class="nc" id="L181">    javaMailSender.send(message);</span>
+<span class="nc" id="L182">  }</span>
+  public Chambre affecterChambreABloc(Long chambreId, Long blocId) {
+<span class="nc" id="L184">    Chambre chambre = chambreRepository.findById(chambreId).orElse(null);</span>
+<span class="nc" id="L185">    Bloc bloc = blocRepository.findById(blocId).orElse(null);</span>
+
+<span class="nc bnc" id="L187" title="All 4 branches missed.">    if (chambre != null &amp;&amp; bloc != null) {</span>
+<span class="nc" id="L188">      chambre.setBloc(bloc);</span>
+<span class="nc" id="L189">      chambreRepository.save(chambre);</span>
+<span class="nc" id="L190">      String to = &quot;emna.felfel@esprit.tn&quot;; // replace with the recipient's email</span>
+<span class="nc" id="L191">      String subject = &quot;Chambre Assigned to Bloc&quot;;</span>
+<span class="nc" id="L192">      String body = &quot;Chambre with ID &quot; + chambreId + &quot; has been assigned to Bloc &quot; + bloc.getNomBloc();</span>
+
+<span class="nc" id="L194">      sendEmail(to, subject, body);</span>
+    }
+<span class="nc" id="L196">    return chambre;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FoyerServiceImp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.services</a> &gt; <span class="el_source">FoyerServiceImp.java</span></div><h1>FoyerServiceImp.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.services;
+
+
+import com.example.sprinprojet.entity.Bloc;
+import com.example.sprinprojet.entity.Foyer;
+import com.example.sprinprojet.repository.FoyerRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+
+@Service
+<span class="nc" id="L20">@AllArgsConstructor</span>
+public class FoyerServiceImp  implements IFoyerService{
+    FoyerRepository foyerRespository;
+    @Override
+    public List&lt;Foyer&gt; retrieveAllFoyers() {
+<span class="nc" id="L25">        return foyerRespository.findAll();</span>
+    }
+
+    @Override
+    public Foyer addFoyer(Foyer e) {
+<span class="nc" id="L30">        return foyerRespository.save(e);</span>
+    }
+
+    @Override
+    public Foyer updateFoyer(Foyer e) {
+<span class="nc" id="L35">        return foyerRespository.save(e);</span>
+    }
+
+    @Override
+    public Foyer retrieveFoyer(Long idFoyer) {
+<span class="nc" id="L40">        return foyerRespository.findById(idFoyer).get();</span>
+    }
+
+    @Override
+    public void removeFoyer(Long idFoyer) {
+<span class="nc" id="L45">        foyerRespository.deleteById(idFoyer);</span>
+
+<span class="nc" id="L47">    }</span>
+
+    @Override
+    public Foyer addFoyerWithBloc(Foyer foyer) {
+        //bloc parent
+        //foyer son
+<span class="nc" id="L53">        Bloc bloc = new Bloc();</span>
+
+<span class="nc" id="L55">        return null;</span>
+    }
+
+    public ByteArrayInputStream experienceExcelReport(List&lt;Foyer&gt; foyes) throws IOException {
+<span class="nc" id="L59">        String[] columns = {&quot;idFoyer&quot;, &quot;nomFoyer&quot;, &quot;capaciteFoyer&quot;};</span>
+<span class="nc" id="L60">        try (Workbook workbook = new XSSFWorkbook();</span>
+<span class="nc" id="L61">             ByteArrayOutputStream out = new ByteArrayOutputStream();) {</span>
+<span class="nc" id="L62">            CreationHelper creationHelper = workbook.getCreationHelper();</span>
+
+<span class="nc" id="L64">            Sheet sheet = workbook.createSheet(&quot;Equipes&quot;);</span>
+<span class="nc" id="L65">            sheet.autoSizeColumn(columns.length);</span>
+
+<span class="nc" id="L67">            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();</span>
+
+<span class="nc" id="L69">            headerFont.setBold(true);</span>
+<span class="nc" id="L70">            headerFont.setColor(IndexedColors.BLUE.getIndex());</span>
+
+<span class="nc" id="L72">            CellStyle cellStyle = workbook.createCellStyle();</span>
+<span class="nc" id="L73">            cellStyle.setFont(headerFont);</span>
+
+<span class="nc" id="L75">            Row headerRow = sheet.createRow(0);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            for(int col = 0; col &lt; columns.length; col++){</span>
+<span class="nc" id="L77">                Cell cell = headerRow.createCell(col);</span>
+<span class="nc" id="L78">                cell.setCellValue(columns[col]);</span>
+<span class="nc" id="L79">                cell.setCellStyle(cellStyle);</span>
+            }
+<span class="nc" id="L81">            CellStyle cellStyle1 = workbook.createCellStyle();</span>
+<span class="nc" id="L82">            cellStyle1.setDataFormat(creationHelper.createDataFormat().getFormat(&quot;#&quot;));</span>
+<span class="nc" id="L83">            int rowIndex = 1;</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            for (Foyer foyer:foyes ){</span>
+<span class="nc" id="L85">                Row row = sheet.createRow(rowIndex++);</span>
+<span class="nc" id="L86">                row.createCell(0).setCellValue(foyer.getIdFoyer());</span>
+<span class="nc" id="L87">                row.createCell(1).setCellValue(foyer.getNomFoyer());</span>
+<span class="nc" id="L88">                row.createCell(2).setCellValue(foyer.getCapaciteFoyer());</span>
+
+<span class="nc" id="L90">            }</span>
+<span class="nc" id="L91">            workbook.write(out);</span>
+<span class="nc" id="L92">            return new ByteArrayInputStream(out.toByteArray());</span>
+        }
+    }
+
+    /////////////pagination//////////////////
+    @Override
+    public Page&lt;Foyer&gt; lire(Pageable pageable) {
+<span class="nc" id="L99">        return (Page&lt;Foyer&gt;) foyerRespository.findAll(pageable);</span>
+    }
+
+    @Override
+    public List&lt;Foyer&gt; listefoyerwheresizebiggerthan(Long capacite) {
+<span class="nc" id="L104">        return foyerRespository.listefoyerwheresizebiggerthan(capacite);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

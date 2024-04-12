@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.contollers</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.contollers;
+import com.example.sprinprojet.entity.*;
+import com.example.sprinprojet.repository.UserRepository;
+import com.example.sprinprojet.services.IUserService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+<span class="nc" id="L23">@AllArgsConstructor</span>
+@RequestMapping(&quot;/user&quot;)
+public class UserController {
+    private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    IUserService iUserService;
+
+    @RequestMapping(value =&quot;/add-user&quot; ,method = RequestMethod.POST)
+    public User addUser(@RequestBody User user) {
+<span class="nc" id="L36">        user.setMotdepasse(this.bCryptPasswordEncoder.encode(user.getMotdepasse()));</span>
+<span class="nc" id="L37">        User savedUser = userRepository.save(user);</span>
+<span class="nc" id="L38">        return iUserService.addUser(user);</span>
+    }
+
+    @PutMapping(&quot;/update-user/{id}&quot;)
+    public User updateUserByID(@RequestBody User updatedUser, @PathVariable(&quot;id&quot;) Long idUser) {
+<span class="nc" id="L43">        User existingUser = userRepository.findById(idUser).orElse(null);</span>
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (existingUser != null) {</span>
+<span class="nc" id="L46">            existingUser.setNomUser(updatedUser.getNomUser());</span>
+<span class="nc" id="L47">            existingUser.setPrenomUser(updatedUser.getPrenomUser());</span>
+<span class="nc" id="L48">            existingUser.setEmail(updatedUser.getEmail());</span>
+
+            // Check if the password in the updatedUser is not null or empty before updating
+<span class="nc" id="L51">            String newPassword = updatedUser.getMotdepasse();</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">            if (newPassword != null &amp;&amp; !newPassword.isEmpty()) {</span>
+                // Hash the new password
+<span class="nc" id="L54">                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();</span>
+<span class="nc" id="L55">                String hashedPassword = passwordEncoder.encode(newPassword);</span>
+<span class="nc" id="L56">                existingUser.setMotdepasse(hashedPassword);</span>
+            }
+
+<span class="nc" id="L59">            existingUser.setRole(updatedUser.getRole());</span>
+
+            // If you need to update other attributes, do the same
+
+<span class="nc" id="L63">            return userRepository.save(existingUser);</span>
+        } else {
+            // Handle the case where the user with the given ID is not found
+            // You can choose to return an error, an appropriate HTTP response, or something else.
+<span class="nc" id="L67">            return null;</span>
+        }
+    }
+
+    @GetMapping(&quot;/retrieve-user/{id}&quot;)
+    public User retrieveUser(@PathVariable(&quot;id&quot;) Long userId) {
+<span class="nc" id="L73">        return iUserService.retrieveUsers(userId);</span>
+    }
+
+    @RequestMapping(value = &quot;/{id}&quot;, method = RequestMethod.DELETE )
+    public void deleteUser(@PathVariable(&quot;id&quot;) long id){
+<span class="nc" id="L78">        iUserService.deleteById(id);</span>
+<span class="nc" id="L79">    }</span>
+
+    @GetMapping(&quot;/retrieve-all-users&quot;)
+    public List&lt;User&gt; getUserList(){
+<span class="nc" id="L83">        List&lt;User&gt;userList=iUserService.retrieveAllUsers();</span>
+<span class="nc" id="L84">        return userList;</span>
+    }
+
+    @PostMapping(&quot;/add-all-users&quot;)
+    public List addAllUsers(@RequestBody List&lt;User&gt;users){
+<span class="nc" id="L89">        List Listuser=iUserService.addAllUsers(users);</span>
+<span class="nc" id="L90">        return Listuser;</span>
+    }
+    @GetMapping(&quot;/retrieve-all&quot;)
+    public ResponseEntity&lt;List&lt;User&gt;&gt; retrieveAllUsers() {
+<span class="nc" id="L94">        List&lt;User&gt; users = iUserService.retrieveAllUsers();</span>
+<span class="nc" id="L95">        return new ResponseEntity&lt;&gt;(users, HttpStatus.OK);</span>
+    }
+
+
+    @GetMapping(&quot;/{id}/qr-code&quot;)
+    public ResponseEntity&lt;byte[]&gt; generateQRCode(@PathVariable Long id) {
+<span class="nc" id="L101">        User user = iUserService.retrieveUsers(id);</span>
+<span class="nc" id="L102">        byte[] qrCode = iUserService.generateQRCode(user);</span>
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (qrCode != null) {</span>
+<span class="nc" id="L105">            return ResponseEntity.ok().header(&quot;Content-Disposition&quot;, &quot;attachment; filename=qr-code.png&quot;).body(qrCode);</span>
+        } else {
+<span class="nc" id="L107">            return ResponseEntity.badRequest().build();</span>
+        }
+    }
+
+    @GetMapping(&quot;/{id}/generate-pdf&quot;)
+    public ResponseEntity&lt;byte[]&gt; generateUserPdf(@PathVariable Long id) throws IOException {
+        // Obtenez les données de l'utilisateur depuis votre logique d'accès aux données utilisateur
+<span class="nc" id="L114">        User user = iUserService.retrieveUsers(id); // ... remplacez par votre logique d'obtention d'utilisateur</span>
+
+        // Générez le PDF
+<span class="nc" id="L117">        byte[] pdfBytes = iUserService.generatePdfForUser(user);</span>
+
+<span class="nc" id="L119">        HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L120">        headers.setContentType(MediaType.APPLICATION_PDF);</span>
+<span class="nc" id="L121">        headers.setContentDispositionFormData(&quot;inline&quot;, &quot;user-details.pdf&quot;);</span>
+
+<span class="nc" id="L123">        return new ResponseEntity&lt;&gt;(pdfBytes, headers, HttpStatus.OK);</span>
+    }
+
+    @GetMapping(&quot;/role-statistics&quot;)
+    public ResponseEntity&lt;Map&lt;String, Long&gt;&gt; getUserRoleStatistics() {
+<span class="nc" id="L128">        Map&lt;String, Long&gt; statistics = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        for (UserRole role : UserRole.values()) {</span>
+<span class="nc" id="L131">            Long count = userRepository.countUsersByRole(role);</span>
+<span class="nc" id="L132">            statistics.put(role.name(), count);</span>
+        }
+
+<span class="nc" id="L135">        return new ResponseEntity&lt;&gt;(statistics, HttpStatus.OK);</span>
+    }
+    @PostMapping(&quot;/login&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; loginUser(@RequestBody User user) {
+<span class="nc" id="L139">        System.out.println(&quot;in login-user&quot;+user);</span>
+<span class="nc" id="L140">        HashMap&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L142">        User userFromDB = userRepository.findByEmail(user.getEmail());</span>
+<span class="nc" id="L143">        System.out.println(&quot;userFromDB+user&quot;+userFromDB);</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (userFromDB == null) {</span>
+<span class="nc" id="L145">            response.put(&quot;message&quot;, &quot;User not found !&quot;);</span>
+<span class="nc" id="L146">            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);</span>
+        } else {
+<span class="nc" id="L148">            boolean compare = this.bCryptPasswordEncoder.matches(user.getMotdepasse(), userFromDB.getMotdepasse());</span>
+<span class="nc" id="L149">            System.out.println(&quot;compare&quot;+compare);</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">            if (!compare) {</span>
+<span class="nc" id="L151">                response.put(&quot;message&quot;, &quot;User not found !&quot;);</span>
+<span class="nc" id="L152">                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);</span>
+            }else
+            {
+<span class="nc" id="L155">                String token = Jwts.builder()</span>
+<span class="nc" id="L156">                        .claim(&quot;data&quot;, userFromDB)</span>
+<span class="nc" id="L157">                        .signWith(SignatureAlgorithm.HS256, &quot;SECRET&quot;)</span>
+<span class="nc" id="L158">                        .compact();</span>
+<span class="nc" id="L159">                response.put(&quot;token&quot;, token);</span>
+<span class="nc" id="L160">                System.out.println(&quot;hhh&quot;);</span>
+<span class="nc" id="L161">                return ResponseEntity.status(HttpStatus.OK).body(response);</span>
+            }
+
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

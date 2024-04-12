@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChambreController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.contollers</a> &gt; <span class="el_source">ChambreController.java</span></div><h1>ChambreController.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.contollers;
+
+import com.example.sprinprojet.entity.Chambre;
+
+import com.example.sprinprojet.entity.TypeChambre;
+import com.example.sprinprojet.repository.ChambreRepository;
+import com.example.sprinprojet.services.IChambreService;
+import com.google.zxing.WriterException;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+@RestController
+<span class="nc" id="L21">@AllArgsConstructor</span>
+@RequestMapping(&quot;/chambre&quot;)
+@CrossOrigin(origins = &quot;http://localhost:4200&quot;)
+<span class="nc" id="L24">@Slf4j</span>
+public class ChambreController {
+    IChambreService iChambreService;
+    ChambreRepository chambreRepository;
+
+    @GetMapping(&quot;/retrieve-all-chambre&quot;)
+    public List&lt;Chambre&gt; getChambreList(){
+<span class="nc" id="L31">        List&lt;Chambre&gt;chambreList=iChambreService.retrieveAllChambres();</span>
+<span class="nc" id="L32">        return chambreList;</span>
+    }
+
+    @PostMapping(&quot;/add-Chambre&quot;)
+    public Chambre addChambre(@RequestBody Chambre ch) {
+<span class="nc" id="L37">        Chambre chambre = iChambreService.addChambre(ch);</span>
+<span class="nc" id="L38">        return chambre;</span>
+    }
+    @GetMapping(&quot;/retrieve-Chambre/{Chambre-id}&quot;)
+    public Chambre retrieveChambre(@PathVariable(&quot;Chambre-id&quot;) Long chambreId) {
+<span class="nc" id="L42">        return iChambreService.retrieveChambre(chambreId);</span>
+    }
+    @DeleteMapping(&quot;/remove-Chambre/{Chambre-id}&quot;)
+    public void removeChambre(@PathVariable(&quot;Chambre-id&quot;) Long idChambre) {
+<span class="nc" id="L46">        iChambreService.removeChambre(idChambre);</span>
+<span class="nc" id="L47">    }</span>
+    @PutMapping(&quot;/update-Chambre&quot;)
+    public Chambre updateEtudiant(@RequestBody Chambre ch) {
+<span class="nc" id="L50">        Chambre chambre= iChambreService.updateChambre(ch);</span>
+<span class="nc" id="L51">        return chambre;</span>
+    }
+  @PutMapping(&quot;/update-chambre/{id}&quot;)
+  public Chambre updateChambreByID(@RequestBody Chambre updatedChambre, @PathVariable(&quot;id&quot;) Long idCahmbre) {
+<span class="nc" id="L55">    Chambre existingChambre = chambreRepository.findById(idCahmbre).orElse(null);</span>
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    if (existingChambre != null) {</span>
+<span class="nc" id="L58">      existingChambre.setNumeroChambre(updatedChambre.getNumeroChambre());</span>
+<span class="nc" id="L59">      existingChambre.setTypeC(updatedChambre.getTypeC());</span>
+
+<span class="nc" id="L61">      return chambreRepository.save(existingChambre);</span>
+    } else {
+
+<span class="nc" id="L64">      return null;</span>
+    }
+  }
+  @GetMapping(&quot;/generate-qr/{chambre-id}&quot;)
+  public ResponseEntity&lt;byte[]&gt; generateQRCode(@PathVariable(&quot;chambre-id&quot;) Long idChambre) {
+    try {
+<span class="nc" id="L70">      Chambre chambre = iChambreService.retrieveChambre(idChambre);</span>
+
+<span class="nc bnc" id="L72" title="All 2 branches missed.">      if (chambre != null ) {</span>
+<span class="nc" id="L73">        byte[] qrCode = iChambreService.generateQRCode(chambre);</span>
+
+<span class="nc" id="L75">        HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L76">        headers.setContentType(MediaType.IMAGE_PNG);</span>
+
+<span class="nc" id="L78">        return new ResponseEntity&lt;&gt;(qrCode, headers, HttpStatus.OK);</span>
+      } else {
+<span class="nc" id="L80">        return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND); // Or handle it in a way that makes sense for your use case</span>
+      }
+<span class="nc" id="L82">    } catch (IOException e) {</span>
+<span class="nc" id="L83">      log.error(&quot;Erreur d'entrée/sortie lors de la génération du code QR : {}&quot;, e.getMessage());</span>
+<span class="nc" id="L84">      return new ResponseEntity&lt;&gt;(HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="nc" id="L85">    } catch (WriterException e) {</span>
+<span class="nc" id="L86">      log.error(&quot;Erreur lors de la génération du code QR : {}&quot;, e.getMessage());</span>
+<span class="nc" id="L87">      return new ResponseEntity&lt;&gt;(HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="nc" id="L88">    } catch (Exception e) {</span>
+<span class="nc" id="L89">      log.error(&quot;Une erreur inattendue s'est produite : {}&quot;, e.getMessage());</span>
+<span class="nc" id="L90">      return new ResponseEntity&lt;&gt;(HttpStatus.INTERNAL_SERVER_ERROR);</span>
+    }
+  }
+  @GetMapping(&quot;/{nomBloc}&quot;)
+  public List&lt;Chambre&gt; getChambresParNomBloc(@PathVariable String nomBloc) {
+<span class="nc" id="L95">    List&lt;Chambre&gt; chambres = iChambreService.getChambresParNomBloc(nomBloc);</span>
+<span class="nc" id="L96">    return chambres;</span>
+  }
+  @GetMapping(&quot;/nbChambreParTypeEtBloc/{typeChambre}/{idBloc}&quot;)
+  public long nbChambreParTypeEtBloc(@PathVariable TypeChambre typeChambre , @PathVariable Long idBloc){
+<span class="nc" id="L100">    return iChambreService.nbChambreParTypeEtBloc(typeChambre, idBloc);</span>
+
+  }
+
+  @PostMapping(&quot;/affecter-chambre-a-bloc/{chambre-id}/{bloc-id}&quot;)
+  public ResponseEntity&lt;Chambre&gt; affecterChambreABloc(
+    @PathVariable(&quot;chambre-id&quot;) Long chambreId,
+    @PathVariable(&quot;bloc-id&quot;) Long blocId) {
+
+<span class="nc" id="L109">    Chambre chambre = iChambreService.affecterChambreABloc(chambreId, blocId);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">    if (chambre != null) {</span>
+<span class="nc" id="L111">      return new ResponseEntity&lt;&gt;(chambre, HttpStatus.OK);</span>
+    } else {
+<span class="nc" id="L113">      return new ResponseEntity&lt;&gt;(HttpStatus.NOT_FOUND);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

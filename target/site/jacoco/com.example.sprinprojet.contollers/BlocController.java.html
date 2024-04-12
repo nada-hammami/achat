@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BlocController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.contollers</a> &gt; <span class="el_source">BlocController.java</span></div><h1>BlocController.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.contollers;
+
+import com.example.sprinprojet.entity.Bloc;
+
+import com.example.sprinprojet.services.IBlocService;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import com.example.sprinprojet.repository.BlocRepository;
+
+
+import java.util.List;
+
+@RestController
+<span class="nc" id="L16">@AllArgsConstructor</span>
+@RequestMapping(&quot;/Bloc&quot;)
+@CrossOrigin(origins = &quot;http://localhost:4200&quot;)
+@Tag(name = &quot;Bloc API&quot;, description = &quot;API for managing Bloc entities&quot;)
+
+
+public class BlocController {
+    IBlocService iBlocService  ; //on injecte l'interface car on peut faire appel à plusieurs interfaces
+    BlocRepository blocRepository;
+
+    @GetMapping(&quot;/retrieve-all-blocs&quot;)
+    public List&lt;Bloc&gt; getBlocList(){
+<span class="nc" id="L28">        List&lt;Bloc&gt;blocList=iBlocService.retrieveAllBlocs();</span>
+<span class="nc" id="L29">        return blocList;</span>
+    }
+
+    @PostMapping(&quot;/add-bloc&quot;)
+    public Bloc addBloc(@RequestBody Bloc b) {
+<span class="nc" id="L34">       Bloc bloc = iBlocService.addBloc(b);</span>
+<span class="nc" id="L35">        return bloc;</span>
+    }
+    @GetMapping(&quot;/retrieve-bloc/{bloc-id}&quot;)
+    public Bloc retrieveBloc(@PathVariable(&quot;bloc-id&quot;) Long idBloc ) {
+
+<span class="nc" id="L40">        return iBlocService.retrieveBloc( idBloc);</span>
+    }
+
+
+    @DeleteMapping(&quot;/remove-bloc/{bloc-id}&quot;)
+    public void removeBloc(@PathVariable(&quot;bloc-id&quot;) Long idBloc) {
+<span class="nc" id="L46">        iBlocService.removeBloc(idBloc);</span>
+<span class="nc" id="L47">    }</span>
+  @PutMapping(&quot;/update-bloc&quot;)
+  public Bloc updateBloc(@RequestBody  Bloc b) {
+<span class="nc" id="L50">    Bloc bloc= iBlocService.updateBloc(b);</span>
+<span class="nc" id="L51">    return bloc;</span>
+  }
+
+    @Operation(summary = &quot;Update Bloc&quot;, description = &quot;Update an existing Bloc entity.&quot;)
+
+    @PutMapping(&quot;/update-bloc/{id}&quot;)
+    public Bloc updateBlocByID(@RequestBody Bloc updatedBloc, @PathVariable(&quot;id&quot;) Long idBloc) {
+<span class="nc" id="L58">        Bloc existingBloc = blocRepository.findById(idBloc).orElse(null);</span>
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (existingBloc != null) {</span>
+<span class="nc" id="L61">            existingBloc.setNomBloc(updatedBloc.getNomBloc());</span>
+<span class="nc" id="L62">            existingBloc.setCapacitebloc(updatedBloc.getCapacitebloc());</span>
+            // Si besoin de mettre à jour d'autres attributs, faites de même
+
+<span class="nc" id="L65">            return blocRepository.save(existingBloc);</span>
+        } else {
+            // Gérer le cas où le bloc avec l'ID donné n'est pas trouvé
+            // Vous pouvez choisir de renvoyer une erreur, une réponse HTTP appropriée, ou autre chose.
+<span class="nc" id="L69">            return null;</span>
+        }
+    }
+  @PutMapping(&quot;/affecterChambresABloc/{numChambre}/{nomBloc}&quot;)
+  @ResponseBody
+  public Bloc affecterChambresABloc(@PathVariable(&quot;numChambre&quot;) List&lt;Long&gt; numChambre, @PathVariable(&quot;nomBloc&quot;) String nomBloc) {
+<span class="nc" id="L75">    Bloc bloc = iBlocService.affecterChambresABloc(numChambre, nomBloc);</span>
+<span class="nc" id="L76">    return bloc;</span>
+  }
+  @GetMapping(&quot;/sort-by-name&quot;)
+  public List&lt;Bloc&gt; sortBlocsByName() {
+<span class="nc" id="L80">    List&lt;Bloc&gt; blocs = iBlocService. retrieveAllBlocs();</span>
+<span class="nc" id="L81">    iBlocService.trierBlocsParNomBloc(blocs);</span>
+<span class="nc" id="L82">    return blocs;</span>
+  }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

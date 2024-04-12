@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FoyerController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.contollers</a> &gt; <span class="el_source">FoyerController.java</span></div><h1>FoyerController.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.contollers;
+
+
+import com.example.sprinprojet.entity.Bloc;
+import com.example.sprinprojet.entity.Etudiant;
+import com.example.sprinprojet.entity.Foyer;
+
+import com.example.sprinprojet.services.FoyerServiceImp;
+import com.example.sprinprojet.services.IFoyerService;
+import lombok.AllArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
+@CrossOrigin(origins = &quot;http://localhost:4200&quot;) // Replace with the actual origin of your Angular app
+<span class="nc" id="L23">@AllArgsConstructor</span>
+@RestController
+
+@RequestMapping(&quot;/foyer&quot;)
+public class FoyerController {
+    private IFoyerService foyerService;
+
+    @GetMapping(&quot;/retrieve-all-foyer&quot;)
+    public List&lt;Foyer&gt; getFoyers() {
+<span class="nc" id="L32">        List&lt;Foyer&gt; listFoyers = foyerService.retrieveAllFoyers();</span>
+<span class="nc" id="L33">        return listFoyers;</span>
+    }
+
+    @GetMapping(&quot;/retrieve-foyer/{foyer-id}&quot;)
+    public Foyer retrieveFoyer(@PathVariable(&quot;foyer-id&quot;) Long foyerId) {
+<span class="nc" id="L38">        return foyerService.retrieveFoyer(foyerId);</span>
+    }
+
+    @PostMapping(&quot;/add-foyer&quot;)
+    public Foyer addFoyer(@RequestBody Foyer e) {
+<span class="nc" id="L43">        Foyer foyer = foyerService.addFoyer(e);</span>
+<span class="nc" id="L44">        return foyer;</span>
+    }
+
+    @DeleteMapping(&quot;/remove-foyer/{foyer-id}&quot;)
+    public void removeFoyer(@PathVariable(&quot;foyer-id&quot;) Long foyerId) {
+<span class="nc" id="L49">        foyerService.removeFoyer(foyerId);</span>
+<span class="nc" id="L50">    }</span>
+
+    @PutMapping(&quot;/update-foyer&quot;)
+    public Foyer updateFoyer(@RequestBody Foyer e) {
+<span class="nc" id="L54">        Foyer foyer= foyerService.updateFoyer(e);</span>
+<span class="nc" id="L55">        return foyer;</span>
+    }
+
+    @GetMapping(&quot;/Foyerpagination&quot;)
+    @ResponseBody
+    public Page&lt;Foyer&gt; getAllFoyer(Pageable pageable) {
+<span class="nc" id="L61">        return foyerService.lire(pageable);</span>
+    }
+
+    @GetMapping(&quot;/export/excel&quot;)
+
+    public ResponseEntity&lt;InputStreamResource&gt; exportFoyersExcel() throws IOException {
+
+<span class="nc" id="L68">        List&lt;Foyer&gt; foyers = (List&lt;Foyer&gt;) foyerService.retrieveAllFoyers();</span>
+<span class="nc" id="L69">        ByteArrayInputStream bais = foyerService.experienceExcelReport(foyers);</span>
+<span class="nc" id="L70">        HttpHeaders headers = new HttpHeaders();</span>
+<span class="nc" id="L71">        headers.add(&quot;Content-Disposition&quot;, &quot;inline; filename=foyers.xlsx&quot;);</span>
+<span class="nc" id="L72">        return ResponseEntity.ok().headers(headers).body(new InputStreamResource(bais));</span>
+    }
+
+    @GetMapping(&quot;/foyersize/{size}&quot;)
+    List&lt;Foyer&gt; listUniverApartirDate(@PathVariable(&quot;size&quot;) long capacite){
+<span class="nc" id="L77">        return foyerService.listefoyerwheresizebiggerthan(capacite);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

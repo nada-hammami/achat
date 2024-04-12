@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationServiceImp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sprinprojet</a> &gt; <a href="index.source.html" class="el_package">com.example.sprinprojet.services</a> &gt; <span class="el_source">ReservationServiceImp.java</span></div><h1>ReservationServiceImp.java</h1><pre class="source lang-java linenums">package com.example.sprinprojet.services;
+
+import com.example.sprinprojet.entity.Etudiant;
+import com.example.sprinprojet.entity.Reservation;
+import com.example.sprinprojet.entity.Status;
+import com.example.sprinprojet.repository.ReservationRepository;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="nc" id="L19">@AllArgsConstructor</span>
+public class ReservationServiceImp implements IReservationService {
+    ReservationRepository reservationRepository;
+
+    @Override
+    public List&lt;Reservation&gt; retrieveAllReservations() {
+<span class="nc" id="L25">        return reservationRepository.findAll();</span>
+    }
+
+    @Override
+    public Reservation addReservation(Reservation r) {
+<span class="nc" id="L30">        return reservationRepository.save(r);</span>
+    }
+
+    @Override
+    public Reservation updateReservation(Reservation r) {
+<span class="nc" id="L35">        return reservationRepository.save(r);</span>
+    }
+
+    @Override
+    public Reservation retrieveReservation(String idReservation) {
+<span class="nc" id="L40">        return reservationRepository.findById(idReservation).get();</span>
+    }
+
+    @Override
+    public void removeReservation(String idReservation) {
+<span class="nc" id="L45">        reservationRepository.deleteById(idReservation);</span>
+
+<span class="nc" id="L47">    }</span>
+    public List&lt;Reservation&gt; getReservationParAnneeUniversitaire(Date dateDebut, Date dateFin )
+    {
+
+<span class="nc" id="L51">        List&lt;Reservation&gt; allReservations = reservationRepository.findByAnneeUniversitaireBetween(dateDebut,dateFin);</span>
+<span class="nc" id="L52">        return allReservations;</span>
+
+    }
+    public boolean updateReservationStatus(String reservationId, Status newStatus) {
+<span class="nc" id="L56">        Optional&lt;Reservation&gt; reservationOptional = reservationRepository.findById(reservationId);</span>
+
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (reservationOptional.isPresent()) {</span>
+<span class="nc" id="L59">            Reservation reservation = reservationOptional.get();</span>
+<span class="nc" id="L60">            reservation.setStatus(newStatus);</span>
+<span class="nc" id="L61">            reservationRepository.save(reservation);</span>
+<span class="nc" id="L62">            return true;</span>
+        }
+
+<span class="nc" id="L65">        return false;</span>
+    }
+    @Transactional
+    //@Scheduled(fixedRate = 60000)
+    //@Scheduled(cron = &quot;0 0 0 * * *&quot;)
+    public void cancelUnconfirmedReservations() {
+<span class="nc" id="L71">        LocalDateTime cutoffDate = LocalDateTime.now().minusHours(1);</span>
+<span class="nc" id="L72">        Date cutoffDateAsDate = Date.from(cutoffDate.atZone(ZoneId.systemDefault()).toInstant());</span>
+<span class="nc" id="L73">        List&lt;Reservation&gt; unconfirmedReservations = reservationRepository.findUnconfirmedReservationsOlderThan(cutoffDateAsDate);</span>
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        for (Reservation reservation : unconfirmedReservations) {</span>
+
+<span class="nc" id="L77">            reservation.setStatus(Status.Annulee);</span>
+<span class="nc" id="L78">            reservationRepository.save(reservation);</span>
+<span class="nc" id="L79">        }</span>
+<span class="nc" id="L80">    }</span>
+    @Autowired
+    private EmailService emailService;
+
+    public String getStudentEmail(String reservationId) {
+<span class="nc" id="L85">        Optional&lt;Reservation&gt; reservationOptional = reservationRepository.findById(reservationId);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (reservationOptional.isPresent()) {</span>
+<span class="nc" id="L87">            Reservation reservation = reservationOptional.get();</span>
+<span class="nc" id="L88">            List&lt;Etudiant&gt; etudiants = reservation.getEtudiants();</span>
+<span class="nc" id="L89">            Etudiant etudiantLie = etudiants.stream()</span>
+<span class="nc" id="L90">                    .filter(etudiant -&gt; etudiant.getReservations().contains(reservation))</span>
+<span class="nc" id="L91">                    .findFirst()</span>
+<span class="nc" id="L92">                    .orElse(null);</span>
+
+<span class="nc bnc" id="L94" title="All 2 branches missed.">            if (etudiantLie != null) {</span>
+<span class="nc" id="L95">                return etudiantLie.getStudentEmail();</span>
+            }
+        }
+<span class="nc" id="L98">        return null;</span>
+    }
+
+
+    public void confirmReservation(String id) {
+<span class="nc" id="L103">        Reservation reservation = reservationRepository.findById(id).orElse(null);</span>
+
+<span class="nc bnc" id="L105" title="All 4 branches missed.">        if (reservation != null &amp;&amp; reservation.getStatus() == Status.NON_CONFIRMEE) {</span>
+
+
+<span class="nc" id="L108">            reservation.setStatus(Status.Confirmee);</span>
+<span class="nc" id="L109">            reservationRepository.save(reservation);</span>
+<span class="nc" id="L110">            List&lt;Etudiant&gt; etudiants = reservation.getEtudiants();</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">            for (Etudiant etudiant : etudiants) {</span>
+<span class="nc" id="L113">                String studentEmail = etudiant.getStudentEmail();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                if (studentEmail != null) {</span>
+<span class="nc" id="L115">                    String subject = &quot;Confirmation de réservation&quot;;</span>
+<span class="nc" id="L116">                    String messageText = &quot;Votre réservation a été confirmée avec succès.&quot;;</span>
+<span class="nc" id="L117">                    emailService.sendConfirmationEmail(studentEmail, subject, messageText);</span>
+                }
+<span class="nc" id="L119">            }}</span>
+<span class="nc" id="L120">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -42,7 +42,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependencies>
+		
     <!-- Spring Boot Actuator for application monitoring -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -54,7 +54,7 @@
         <groupId>io.micrometer</groupId>
         <artifactId>micrometer-registry-prometheus</artifactId>
     </dependency>
-</dependencies>
+
 
 
 		<dependency>
